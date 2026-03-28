@@ -51,7 +51,7 @@ def instalar_minecraft():
     if version:
         minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_directori)
         print(f'se ha instalado la versión {version}')
-        messagebox.showinfo("Exito", f'Se ha instalado la versión')
+        messagebox.showinfo("Exito", f'Se ha instalado la versión. Abre y cierra para ejecutar los cambios')
     else:
         messagebox.showinfo("Error", "No se ingreso ninguna versión")
 
@@ -59,9 +59,9 @@ def instalar_forge():
     version = entry_versiones.get()
     forge = minecraft_launcher_lib.forge.find_forge_version(version)
     if forge:
-        minecraft_launcher_lib.install_forge_version(forge, minecraft_directori)
+        minecraft_launcher_lib.forge.install_forge_version(forge, minecraft_directori)
         print('Forge instalado')
-        messagebox.showinfo("Éxito", "Forge instalado :)")
+        messagebox.showinfo("Éxito", "Forge instalado :). Abre y cierra para ejecutar los cambios.")
     else:
         messagebox.showerror("Error", "No se encontró una versión de Forge para esta versión de Minecraft")
 
