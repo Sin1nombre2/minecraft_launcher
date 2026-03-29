@@ -2,27 +2,51 @@ import minecraft_launcher_lib
 import os
 import subprocess
 import sys
+import threading
+import tkinter as tk
+from tkinter import ttk, messagebox
+import shutil
 
 # ====================== CONFIGURACIÓN ======================
 user_window = os.environ.get("USERNAME", "Usuario")
 minecraft_directori = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
 
-# Crear carpeta si no existe
 os.makedirs(minecraft_directori, exist_ok=True)
 
-# Obtener versiones instaladas
 versiones_instaladas = minecraft_launcher_lib.utils.get_installed_versions(minecraft_directori)
 versiones_instaladas_lista = [v['id'] for v in versiones_instaladas]
 
 if not versiones_instaladas_lista:
-    print("No hay versiones instaladas todavía.")
     versiones_instaladas_lista.append("sin versiones instaladas")
+
+
+# ====================== VENTANA DE CARGA ======================
+def mostrar_barra_carga(func, *args):
+    root = tk.Tk()
+    root.title("Instalando...")
+    root.geometry("300x100")
+    root.resizable(False, False)
+
+    label = tk.Label(root, text="Descargando / Instalando...")
+    label.pack(pady=10)
+
+    progress = ttk.Progressbar(root, orient="horizontal", length=250, mode="indeterminate")
+    progress.pack(pady=10)
+    progress.start(10)
+
+    def tarea():
+        try:
+            func(*args)
+        finally:
+            root.destroy()
+
+    threading.Thread(target=tarea).start()
+    root.mainloop()
 
 
 # ====================== FUNCIONES ======================
 
 def ask_yes_no(pregunta: str) -> bool:
-    """Función para preguntar Sí/No"""
     while True:
         respuesta = input(f"{pregunta} [S/N]: ").strip().upper()
         if respuesta == "S":
@@ -34,168 +58,171 @@ def ask_yes_no(pregunta: str) -> bool:
 
 
 def instalar_minecraft(version: str):
-    if not version:
-        print("Error: No ingresaste ninguna versión.")
-        return
-    try:
-        print(f"Instalando versión vanilla {version}...")
-        minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_directori)
-        print(f"✅ Versión {version} instalada correctamente.")
-    except Exception as e:
-        print(f"❌ Error al instalar la versión: {e}")
+    def tarea():
+        try:
+            minecraft_launcher_lib.install.install_minecraft_version(version, minecraft_directori)
+            print(f"✅ Versión {version} instalada correctamente.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
+    if version:
+        print(f"Instalando versión {version}...")
+        mostrar_barra_carga(tarea)
+    else:
+        print("❌ No ingresaste versión.")
 
 
 def instalar_forge(version: str):
-    if not version:
-        print("Error: No ingresaste ninguna versión.")
-        return
-    try:
-        forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
-        if not forge_version:
-            print(f"❌ No se encontró Forge para la versión {version}.")
-            return
-        
-        print(f"Instalando Forge para {version}...")
-        minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_directori)
-        print(f"✅ Forge para {version} instalado correctamente.")
-    except Exception as e:
-        print(f"❌ Error al instalar Forge: {e}")
+    def tarea():
+        try:
+            forge_version = minecraft_launcher_lib.forge.find_forge_version(version)
+            if not forge_version:
+                print("❌ No se encontró Forge.")
+                return
+
+            minecraft_launcher_lib.forge.install_forge_version(forge_version, minecraft_directori)
+            print(f"✅ Forge instalado.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
+    if version:
+        mostrar_barra_carga(tarea)
+    else:
+        print("❌ No ingresaste versión.")
 
 
 def instalar_modpack():
-    """Instala un modpack en formato .mrpack (Modrinth) en carpeta automática"""
-    mrpack_path = input("\nIngresa la ruta completa del archivo .mrpack: ").strip()
+    mrpack_path = input("\nRuta del .mrpack: ").strip()
 
-    if not mrpack_path or not os.path.isfile(mrpack_path):
-        print("❌ Error: No se encontró el archivo .mrpack o la ruta es incorrecta.")
+    if not os.path.isfile(mrpack_path):
+        print("❌ Archivo no válido.")
         return
 
     try:
         info = minecraft_launcher_lib.mrpack.get_mrpack_information(mrpack_path)
-    except Exception:
-        print("❌ Error: El archivo no es un .mrpack válido.")
+    except:
+        print("❌ No es un .mrpack válido.")
         return
 
-    # Limpiar nombre del modpack
-    modpack_name = info.get('name', 'Modpack_Sin_Nombre').strip()
+    modpack_name = info.get('name', 'Modpack').strip()
     modpack_name = "".join(c if c.isalnum() or c in " _-()" else "_" for c in modpack_name)
 
-    # Mostrar información
-    print("\n" + "="*50)
-    print("INFORMACIÓN DEL MODPACK")
-    print("="*50)
-    print(f"Nombre:     {modpack_name}")
-    print(f"Resumen:    {info.get('summary', 'Sin descripción')}")
-    print(f"Versión MC: {info.get('minecraftVersion', 'Desconocida')}")
-    print("="*50)
-
-    if not ask_yes_no("¿Deseas instalar este modpack?"):
+    if not ask_yes_no("¿Instalar modpack?"):
         return
 
-    # === CREAR CARPETA instances ===
     instances_dir = os.path.join(minecraft_directori, "instances")
     os.makedirs(instances_dir, exist_ok=True)
 
-    # === CREAR CARPETA DEL MODPACK ===
     modpack_dir = os.path.join(instances_dir, modpack_name)
 
-    # Evitar sobrescribir
-    if os.path.exists(modpack_dir):
-        contador = 1
-        while os.path.exists(f"{modpack_dir}_{contador}"):
-            contador += 1
-        modpack_dir = f"{modpack_dir}_{contador}"
+    def tarea():
+        try:
+            minecraft_launcher_lib.mrpack.install_mrpack(
+                mrpack_path,
+                minecraft_directori,
+                modpack_directory=modpack_dir,
+                callback={"setStatus": print}
+            )
+            print("✅ Modpack instalado.")
+        except Exception as e:
+            print(f"❌ Error: {e}")
 
-    # Archivos opcionales
-    optional_files = []
-    for archivo in info.get("optionalFiles", []):
-        if ask_yes_no(f"¿Instalar archivo opcional: {archivo}?"):
-            optional_files.append(archivo)
+    mostrar_barra_carga(tarea)
 
-    mrpack_options = {"optionalFiles": optional_files}
 
-    # Instalar
-    print(f"\n📁 Instalando en: {modpack_dir}")
-    print("⏳ Esto puede tardar varios minutos...\n")
+def eliminar_version():
+    print(f"\nVersiones: {', '.join(versiones_instaladas_lista)}")
+    version = input("¿Qué versión deseas eliminar?: ").strip()
 
-    try:
-        minecraft_launcher_lib.mrpack.install_mrpack(
-            mrpack_path,
-            minecraft_directori,
-            modpack_directory=modpack_dir,
-            mrpack_install_options=mrpack_options,
-            callback={"setStatus": print}
-        )
-        print(f"\n✅ ¡Modpack instalado correctamente en:\n{modpack_dir}")
-    except Exception as e:
-        print(f"❌ Error durante la instalación del modpack: {e}")
+    ruta = os.path.join(minecraft_directori, "versions", version)
+
+    if os.path.exists(ruta):
+        shutil.rmtree(ruta)
+        print("✅ Versión eliminada.")
+    else:
+        print("❌ No existe esa versión.")
+
+
+def eliminar_modpack():
+    instances_dir = os.path.join(minecraft_directori, "instances")
+
+    if not os.path.exists(instances_dir):
+        print("❌ No hay modpacks.")
+        return
+
+    modpacks = os.listdir(instances_dir)
+    print(f"\nModpacks: {', '.join(modpacks)}")
+
+    nombre = input("¿Qué modpack eliminar?: ").strip()
+    ruta = os.path.join(instances_dir, nombre)
+
+    if os.path.exists(ruta):
+        shutil.rmtree(ruta)
+        print("✅ Modpack eliminado.")
+    else:
+        print("❌ No existe.")
 
 
 def ejecutar_minecraft(mine_user: str, version: str, ram: str):
-    if not mine_user or not version or not ram:
-        print("❌ Error: Faltan datos (usuario, versión o RAM).")
-        return
-
     try:
         options = {
             'username': mine_user,
             'uuid': '',
             'token': '',
-            'jvmArguments': [f"-Xmx{ram}G", f"-Xms{ram}G"],
-            'launcherVersion': "1.0"
+            'jvmArguments': [f"-Xmx{ram}G", f"-Xms{ram}G"]
         }
-
-        print(f"\nIniciando Minecraft con la versión: {version}")
-        print(f"Usuario: {mine_user} | RAM: {ram}GB")
 
         comando = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_directori, options)
         subprocess.run(comando)
 
     except Exception as e:
-        print(f"❌ Error al iniciar Minecraft: {e}")
+        print(f"❌ Error: {e}")
 
 
-# ====================== MENÚ PRINCIPAL ======================
+# ====================== MENÚ ======================
 def main():
     while True:
         print("\n" + "="*60)
-        print("       LANZADOR DE MINECRAFT - VERSIÓN CONSOLA")
+        print("LANZADOR MINECRAFT     Autor:Sin1Nombre2")
         print("="*60)
-        print("1. Instalar versión de Minecraft (Vanilla)")
+        print("1. Instalar Vanilla")
         print("2. Instalar Forge")
-        print("3. Instalar Modpack (.mrpack)")
-        print("4. Ejecutar Minecraft")
-        print("5. Salir")
-        print("="*60)
+        print("3. Instalar Modpack")
+        print("4. Ejecutar")
+        print("5. Eliminar versión")
+        print("6. Eliminar modpack")
+        print("7. Salir")
 
-        choice = input("\nSelecciona una opción (1-5): ").strip()
+        choice = input("Opción: ").strip()
 
         if choice == '1':
-            print(f"\nVersiones instaladas: {', '.join(versiones_instaladas_lista)}")
-            version = input("Ingresa la versión de Minecraft a instalar (ej: 1.21.3): ").strip()
+            version = input("Versión: ")
             instalar_minecraft(version)
 
         elif choice == '2':
-            print(f"\nVersiones instaladas: {', '.join(versiones_instaladas_lista)}")
-            version = input("Ingresa la versión de Minecraft para instalar Forge (ej: 1.21.3): ").strip()
+            version = input("Versión: ")
             instalar_forge(version)
 
         elif choice == '3':
             instalar_modpack()
 
         elif choice == '4':
-            mine_user = input("\nIngresa tu nombre de usuario: ").strip()
-            print(f"\nVersiones instaladas: {', '.join(versiones_instaladas_lista)}")
-            version = input("Selecciona la versión a ejecutar: ").strip()
-            ram = input("Ingresa la cantidad de RAM en GB (ej: 6): ").strip()
-            ejecutar_minecraft(mine_user, version, ram)
+            user = input("Usuario: ")
+            version = input("Versión: ")
+            ram = input("RAM (GB): ")
+            ejecutar_minecraft(user, version, ram)
 
         elif choice == '5':
-            print("\n¡Gracias por usar el lanzador! Hasta luego.")
+            eliminar_version()
+
+        elif choice == '6':
+            eliminar_modpack()
+
+        elif choice == '7':
             break
 
         else:
-            print("❌ Opción no válida. Por favor, elige entre 1 y 5.")
+            print("❌ Opción inválida")
 
 
 if __name__ == "__main__":
