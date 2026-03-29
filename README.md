@@ -31,7 +31,7 @@ Este repositorio contiene **dos versiones** del lanzador:
 
 1. Clona el repositorio:
 
-```bash
+bash
 git clone https://github.com/sin1nombre2/minecraft-launcher.git
 cd minecraft-launcher
 
