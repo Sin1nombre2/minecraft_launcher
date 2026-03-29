@@ -41,8 +41,6 @@ bt_ejecutar = ctk.CTkButton(ventana, text='Iniciar Minecraft', fg_color="#3b82f6
 bt_instalar_version = ctk.CTkButton(ventana, text='Instalar Versión Vanilla', fg_color="#10b981", width=200)
 bt_instalar_forge = ctk.CTkButton(ventana, text='Instalar Forge', fg_color="#ef4444", width=200)
 bt_instalar_mrpack = ctk.CTkButton(ventana, text='Instalar Modpack (.mrpack)', fg_color="#8b5cf6", width=200)
-
-# NUEVOS BOTONES
 bt_eliminar_version = ctk.CTkButton(ventana, text='Eliminar Versión', fg_color="#f59e0b", width=200)
 bt_eliminar_modpack = ctk.CTkButton(ventana, text='Eliminar Modpack', fg_color="#000000", width=200)
 
