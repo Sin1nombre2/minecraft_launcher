@@ -46,6 +46,15 @@ python -m pip install customtkinter
 launcher_sin_interfaz.py → Versión Consola
 launcher_con_interfaz.py → Versión con Interfaz Gráfica (recomendada✅)
 
+⚠️ Importante (Interfaz Gráfica)
+
+Para usar correctamente la versión con interfaz gráfica, debes descargar el archivo:
+
+👉 icono.ico
+
+Y colocarlo en la misma carpeta del script (launcher_con_interfaz.py).
+
+De lo contrario, la ventana puede abrirse sin icono o generar errores dependiendo del sistema.
 
 Cómo usar (powershell)
 Versión Consola
