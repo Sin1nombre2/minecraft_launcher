@@ -11,11 +11,11 @@ Este repositorio contiene **dos versiones** del lanzador:
 ## ✨ Características
 
 - Instalar versiones oficiales de Minecraft (Vanilla)
-- Instalar Forge
+- Instalar Forge.
 - Instalar modpacks completos en formato **.mrpack** (Modrinth)
-- Soporte para archivos opcionales durante la instalación
-- Ejecutar Minecraft con RAM personalizada y nombre de usuario
-- Dos versiones disponibles: Consola y con Interfaz Gráfica
+- Soporte para archivos opcionales durante la instalación.
+- Ejecutar Minecraft con RAM personalizada y nombre de usuario.
+- Dos versiones disponibles: Consola y con Interfaz Gráfica.
 
 ---
 
