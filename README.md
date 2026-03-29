@@ -1,66 +1,74 @@
-# Lanzador de Minecraft - Consola y grafico
+🚀 Lanzador de Minecraft - Consola y Gráfico
 
-Un lanzador ligero y funcional para Minecraft escrito en Python. Permite instalar versiones Vanilla, Forge, modpacks (.mrpack), ejecutar el juego y gestionar instalaciones.
+Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permite instalar versiones Vanilla, Forge, y modpacks (.mrpack), además de ejecutar el juego y gestionar instalaciones fácilmente.
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.8%20a%201.21+-green)
 
-## ✨ Características
+✨ Características
+🧼 Interfaz limpia y fácil de usar (modo consola y gráfico)
+📊 Barra de progreso durante descargas e instalaciones
+📦 Instalación de versiones Vanilla
+🔧 Instalación automática de Forge
+🧩 Soporte para modpacks (.mrpack)
+▶️ Ejecución de Minecraft con RAM personalizada
+🗑️ Eliminación segura de versiones y modpacks
+⚠️ Manejo de errores mejorado
+🔄 Actualización automática de versiones instaladas
+📋 Requisitos
+Python 3.8 o superior
+Java instalado y configurado en el PATH
+Conexión a internet
+⚙️ Instalación
+# Clonar repositorio
+git clone https://github.com/tuusuario/minecraft-launcher-console.git
 
-- **Interfaz variada** limpia y fácil de usar
-- **Barra de progreso** visual durante descargas e instalaciones
-- Instalación de **Versiones Vanilla**
-- Instalación de **Forge** (con detección automática)
-- Soporte completo para **Modpacks** (.mrpack)
-- Ejecución del juego con RAM personalizada
-- Eliminación segura de versiones y modpacks
-- Manejo de errores mejorado
-- Actualización automática de lista de versiones
+# Entrar en la carpeta
+cd minecraft-launcher-console
 
-## 📋 Requisitos
-
-- **Python 3.8 o superior**
-- Java instalado y configurado en el PATH (necesario para ejecutar Minecraft)
-- Conexión a internet (para descargas)
-
-## 🚀 Instalación
-
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/tuusuario/minecraft-launcher-console.git
-   cd minecraft-launcher-console
-
-Instala las dependencias: pip install minecraft-launcher-lib customtkinter
-Ejecuta el lanzador
-
-
+# Instalar dependencias
+pip install minecraft-launcher-lib customtkinter
+▶️ Uso
+🖥️ Versión con interfaz gráfica
+python launcher_con_interfaz.py
+⌨️ Versión por consola
+python launcher_sin_interfaz.py
 📁 Estructura del proyecto
-textminecraft-launcher-console/
-├── launcher_con_interfaz.py          
-├── launcher_sin_interfaz.py          
+minecraft-launcher-console/
+├── launcher_con_interfaz.py
+├── launcher_sin_interfaz.py
 ├── README.md
-└── icono.ico            # (opcional)
-⚙️ Notas importantes
+└── icono.ico  # (opcional, necesario para la GUI)
+⚠️ Notas importantes
+El launcher funciona en modo offline (no requiere cuenta premium)
 
-El launcher usa modo offline (cuenta sin premium).
-La carpeta de Minecraft se encuentra en:
+Ruta de instalación por defecto:
+
 C:/Users/TuUsuario/AppData/Roaming/.launchermc
-Se recomienda al menos 4GB de RAM para una experiencia fluida.
-Si borras una versión, la lista se actualiza automáticamente.
-
+Se recomienda al menos 4GB de RAM
+La lista de versiones se actualiza automáticamente al instalar o eliminar
 🛠️ Mejoras futuras
+🔐 Soporte para cuentas Microsoft (login premium)
+📊 Barra de progreso con porcentaje real
+📂 Selección de carpeta personalizada
+🔄 Actualizador automático del launcher
+🎨 Mejoras visuales en la interfaz gráfica
+📸 Capturas (opcional pero recomendado)
 
-Soporte para cuentas Microsoft (login premium)
-Barra de progreso con porcentaje real
-Opción para elegir carpeta de instalación
-Modo gráfico (CustomTkinter)
-Actualizador automático
-
-📄 Licencia
-Este proyecto es de código abierto. Siéntete libre de modificarlo y mejorarlo.
+(Aquí puedes añadir imágenes o GIFs del launcher funcionando)
 
 🤝 Contribuciones
-Las contribuciones son bienvenidas. 
-Si encuentras algún bug o tienes ideas para mejorar el lanzador, no dudes en abrir un Issue o hacer un Pull Request.
 
-Hecho con ❤️ por [Sin1Nombre2](https://discord.com/users/886004158149296138)
+Las contribuciones son bienvenidas 🙌
+Si encuentras un error o tienes ideas, puedes:
+
+Abrir un Issue
+Crear un Pull Request
+📄 Licencia
+
+Este proyecto es de código abierto. Puedes usarlo, modificarlo y mejorarlo libremente.
+
+❤️ Autor
+
+Hecho por Sin1Nombre2
+🔗 https://discord.com/users/886004158149296138
