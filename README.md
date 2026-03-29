@@ -43,15 +43,15 @@ python -m pip install customtkinter
 
 📂 Archivos del proyecto
 
-.launcher_sin_interfaz.py → Versión Consola
-.launcher_con_interfaz.py → Versión con Interfaz Gráfica (recomendada✅)
+launcher_sin_interfaz.py → Versión Consola
+launcher_con_interfaz.py → Versión con Interfaz Gráfica (recomendada✅)
 
 
 Cómo usar (powershell)
 Versión Consola
-abre powershell en donde tienes el archivo y ejecuta: python .launcher_sin_interfaz.py
+abre powershell en donde tienes el archivo y ejecuta: python launcher_sin_interfaz.py
 Versión con Interfaz Gráfica
-python .launcher_con_interfaz.py
+python launcher_con_interfaz.py
 
 cómo usar (Visual Studio Code es necesario la extension de python) 
 Versión Consola
