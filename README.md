@@ -65,7 +65,7 @@ Instalación de Modpacks (.mrpack)
 En la versión consola: selecciona la opción 3
 En la versión gráfica: haz clic en "Instalar Modpack (.mrpack)"
 Pega la ruta completa del archivo .mrpack
-Elige si deseas instalar los archivos opcionales (se recomienda responder No a la mayoría, especialmente a: Essential, FancyMenu, Xaero's Minimap, Litematica, JEI, Jade, etc.)
+Elige si deseas instalar los archivos opcionales
 
 
 ⚠️ Problemas comunes y soluciones
