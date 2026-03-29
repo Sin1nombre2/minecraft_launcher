@@ -32,7 +32,7 @@ Este repositorio contiene **dos versiones** del lanzador:
 1. Clona el repositorio:
 
 bash
-git clone https://github.com/sin1nombre2/minecraft-launcher.git
+git clone https://github.com/sin1nombre2/minecraft_launcher.git
 cd minecraft-launcher
 
 Instala las dependencias:
@@ -78,6 +78,7 @@ El juego crashea → Revisa la carpeta crash-reports y elimina los mods incompat
 👤 Autor
 
 GitHub: @sin1nombre2
+
 Discord: [sin__nombre__](https://sin1nombre2-discord.com/users/886004158149296138)
 
 
