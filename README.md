@@ -33,12 +33,12 @@ Este repositorio contiene **dos versiones** del lanzador:
 
 bash
 git clone https://github.com/sin1nombre2/minecraft_launcher.git
-cd minecraft-launcher
+cd minecraft_launcher
 
 Instala las dependencias:
 
 python -m pip install -U minecraft-launcher-lib
-Para la versión con interfaz gráfica también instala:
+tambien instala:
 python -m pip install customtkinter
 
 📂 Archivos del proyecto
