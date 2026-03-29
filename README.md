@@ -5,17 +5,28 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.8%20a%201.21+-green)
 
-✨ Características
+✨ Características:
+
 🧼 Interfaz limpia y fácil de usar (modo consola y gráfico)
+
 📊 Barra de progreso durante descargas e instalaciones
+
 📦 Instalación de versiones Vanilla
+
 🔧 Instalación automática de Forge
+
 🧩 Soporte para modpacks (.mrpack)
+
 ▶️ Ejecución de Minecraft con RAM personalizada
+
 🗑️ Eliminación segura de versiones y modpacks
+
 ⚠️ Manejo de errores mejorado
+
 🔄 Actualización automática de versiones instaladas
-📋 Requisitos
+
+
+**📋 Requisitos**
 Python 3.8 o superior
 Java instalado y configurado en el PATH
 Conexión a internet
