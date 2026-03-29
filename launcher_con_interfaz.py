@@ -4,6 +4,7 @@ import subprocess
 import sys
 import customtkinter as ctk
 from tkinter import messagebox
+from tkinter import PhotoImage  
 import shutil
 
 # ====================== CONFIGURACIÓN DE ESTILOS ======================
@@ -15,6 +16,11 @@ ventana = ctk.CTk()
 ventana.geometry('700x550')
 ventana.title('Lanzador de Minecraft - Hecho por: Sin1Nombre2')
 ventana.resizable(False, False)
+
+# 👇 ICONO DE LA VENTANA 
+ventana.iconbitmap("icono.ico")
+
+# 👇 DIRECTORIO
 
 user_window = os.environ.get("USERNAME", "Usuario")
 minecraft_directori = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
@@ -32,7 +38,7 @@ def ventana_carga(titulo="Instalando..."):
 
     barra = ctk.CTkProgressBar(win, width=250)
     barra.pack(pady=10)
-    barra.start()  # animación infinita
+    barra.start()
 
     return win
 
@@ -92,7 +98,7 @@ def eliminar_modpack():
         messagebox.showerror("Error", "No hay modpacks")
         return
 
-    modpack = modpacks[0]  # simple (puedes mejorar luego)
+    modpack = modpacks[0]
 
     ruta = os.path.join(instances_dir, modpack)
 
