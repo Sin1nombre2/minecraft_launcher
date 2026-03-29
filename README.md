@@ -1,107 +1,62 @@
-# Lanzador de Minecraft - Consola y Gráfico
+# Lanzador de Minecraft - Consola y grafico
 
-Un lanzador ligero para Minecraft desarrollado en Python que permite instalar versiones **Vanilla**, **Forge** y **modpacks .mrpack** de Modrinth.
+Un lanzador ligero y funcional para Minecraft escrito en Python. Permite instalar versiones Vanilla, Forge, modpacks (.mrpack), ejecutar el juego y gestionar instalaciones.
 
-Este repositorio contiene **dos versiones** del lanzador:
-- **Versión Consola** (ligera y sin dependencias gráficas)
-- **Versión con Interfaz Gráfica** (usando CustomTkinter)
-
----
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Minecraft](https://img.shields.io/badge/Minecraft-1.8%20a%201.21+-green)
 
 ## ✨ Características
 
-- Instalar versiones oficiales de Minecraft (Vanilla)
-- Instalar Forge.
-- Instalar modpacks completos en formato **.mrpack** (Modrinth)
-- Soporte para archivos opcionales durante la instalación.
-- Ejecutar Minecraft con RAM personalizada y nombre de usuario.
-- Dos versiones disponibles: Consola y con Interfaz Gráfica.
-
----
+- **Interfaz variada** limpia y fácil de usar
+- **Barra de progreso** visual durante descargas e instalaciones
+- Instalación de **Versiones Vanilla**
+- Instalación de **Forge** (con detección automática)
+- Soporte completo para **Modpacks** (.mrpack)
+- Ejecución del juego con RAM personalizada
+- Eliminación segura de versiones y modpacks
+- Manejo de errores mejorado
+- Actualización automática de lista de versiones
 
 ## 📋 Requisitos
 
-- **Python 3.10** o superior
-- **Java 17 o 21** instalado y configurado en el PATH (recomendado Java 21)
-- Conexión a internet
-
----
+- **Python 3.8 o superior**
+- Java instalado y configurado en el PATH (necesario para ejecutar Minecraft)
+- Conexión a internet (para descargas)
 
 ## 🚀 Instalación
 
-1. Clona el repositorio:
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/tuusuario/minecraft-launcher-console.git
+   cd minecraft-launcher-console
 
-bash
-git clone https://github.com/sin1nombre2/minecraft_launcher.git
-cd minecraft_launcher
-
-Instala las dependencias:
-
-python -m pip install -U minecraft-launcher-lib
-tambien instala:
-python -m pip install customtkinter
-
-📂 Archivos del proyecto
-
-launcher_sin_interfaz.py → Versión Consola
-launcher_con_interfaz.py → Versión con Interfaz Gráfica (recomendada✅)
-
-⚠️ Importante (Interfaz Gráfica)
-
-Para usar correctamente la versión con interfaz gráfica, debes descargar el archivo:
-👉 icono.ico
-Y colocarlo en la misma carpeta del script (launcher_con_interfaz.py).
-De lo contrario, la ventana puede abrirse sin icono o generar errores dependiendo del sistema.
-
-Cómo usar: (powershell)
-Versión Consola
-abre powershell en donde tienes el archivo y ejecuta: python launcher_sin_interfaz.py
-Versión con Interfaz Gráfica
-python launcher_con_interfaz.py
-
-cómo usar: (Visual Studio Code es necesario la extension de python) 
-Versión Consola
-Solo Ejecuta el script por medio de python
-Versión Grafica
-Solo Ejecuta el script por medio de python 
-
-📖 Guía de uso
-Instalación de Modpacks (.mrpack)
-
-En la versión consola: selecciona la opción 3
-En la versión gráfica: haz clic en "Instalar Modpack (.mrpack)"
-Pega la ruta completa del archivo .mrpack
-Elige si deseas instalar los archivos opcionales
+Instala las dependencias:pip install minecraft-launcher-lib customtkinter
+Ejecuta el lanzador:Bashpython launcher.py
 
 
-⚠️ Problemas comunes y soluciones
+📁 Estructura del proyecto
+textminecraft-launcher-console/
+├── launcher_con_interfaz.py          
+├── launcher_sin_interfaz.py          
+├── README.md
+└── icono.ico            # (opcional)
+⚙️ Notas importantes
 
-Error SSL durante la instalación → Ejecuta el script como Administrador
-Mods incompatibles → Desactiva los archivos opcionales al instalar el modpack
-El juego crashea → Revisa la carpeta crash-reports y elimina los mods incompatibles de la carpeta mods
+El launcher usa modo offline (cuenta sin premium).
+La carpeta de Minecraft se encuentra en:
+C:/Users/TuUsuario/AppData/Roaming/.launchermc
+Se recomienda al menos 4GB de RAM para una experiencia fluida.
+Si borras una versión, la lista se actualiza automáticamente.
 
+🛠️ Mejoras futuras
 
-👤 Autor
-
-GitHub: @sin1nombre2
-
-Discord: [sin__nombre__](https://discord.com/users/886004158149296138)
-
-
-📌 Próximas mejoras
-
-Soporte completo para Fabric y Quilt
-Actualización automática de la lista de versiones
-Guardado de configuraciones en JSON
-Mejora en el manejo de errores SSL
-Opción para instalar mods individuales
-
-
-🤝 Contribuciones
-Las contribuciones son bienvenidas. Si encuentras algún bug o tienes ideas para mejorar el lanzador, no dudes en abrir un Issue o hacer un Pull Request.
+Soporte para cuentas Microsoft (login premium)
+Barra de progreso con porcentaje real
+Opción para elegir carpeta de instalación
+Modo gráfico (CustomTkinter)
+Actualizador automático
 
 📄 Licencia
-Este proyecto está bajo la licencia MIT.
+Este proyecto es de código abierto. Siéntete libre de modificarlo y mejorarlo.
 
-¡Gracias por usar el Lanzador de Minecraft!
-Cualquier duda o sugerencia, contáctame por Discord.
+Hecho con ❤️ por [Sin1Nombre2](https://discord.com/users/886004158149296138)
