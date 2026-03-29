@@ -4,7 +4,6 @@ Un lanzador ligero y funcional para Minecraft escrito en Python. Permite instala
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.8%20a%201.21+-green)
-![Sin1nombre2](https://img.shields.io/badge/sin1-nombre2+-222222?labelColor=red)
 
 ## ✨ Características
 
