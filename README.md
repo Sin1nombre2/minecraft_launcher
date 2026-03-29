@@ -30,8 +30,8 @@ Un lanzador ligero y funcional para Minecraft escrito en Python. Permite instala
    git clone https://github.com/tuusuario/minecraft-launcher-console.git
    cd minecraft-launcher-console
 
-Instala las dependencias:pip install minecraft-launcher-lib customtkinter
-Ejecuta el lanzador:Bashpython launcher.py
+Instala las dependencias: pip install minecraft-launcher-lib customtkinter
+Ejecuta el lanzador
 
 
 📁 Estructura del proyecto
