@@ -1,11 +1,7 @@
+import os, sys, subprocess, threading, shutil, uuid
 import minecraft_launcher_lib
-import os
-import subprocess
-import sys
-import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
-import shutil
 
 # ====================== CONFIGURACIÓN ======================
 user_window = os.environ.get("USERNAME", "Usuario")
@@ -167,7 +163,7 @@ def ejecutar_minecraft(mine_user: str, version: str, ram: str):
     try:
         options = {
             'username': mine_user,
-            'uuid': '',
+            'uuid': str(uuid.uuid4()),
             'token': '',
             'jvmArguments': [f"-Xmx{ram}G", f"-Xms{ram}G"]
         }

@@ -1,11 +1,7 @@
+import os, sys, subprocess, shutil, uuid
 import minecraft_launcher_lib
-import os
-import subprocess
-import sys
 import customtkinter as ctk
-from tkinter import messagebox
-from tkinter import PhotoImage  
-import shutil
+from tkinter import messagebox, PhotoImage
 
 # ====================== CONFIGURACIÓN DE ESTILOS ======================
 ctk.set_appearance_mode("dark")
@@ -186,7 +182,7 @@ def ejecutar_minecraft():
 
     options = {
         'username': nombre,
-        'uuid': '',
+        'uuid': str(uuid.uuid4()),
         'token': '',
         'jvmArguments': [f"-Xmx{ram}G"],
     }
