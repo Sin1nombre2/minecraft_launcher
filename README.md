@@ -79,7 +79,7 @@ El juego crashea → Revisa la carpeta crash-reports y elimina los mods incompat
 
 GitHub: @sin1nombre2
 
-Discord: [sin__nombre__](https://sin1nombre2-discord.com/users/886004158149296138)
+Discord: [sin__nombre__](https://discord.com/users/886004158149296138)
 
 
 📌 Próximas mejoras
