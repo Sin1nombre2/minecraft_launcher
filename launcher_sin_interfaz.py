@@ -192,11 +192,17 @@ def main():
         choice = input("Opción: ").strip()
 
         if choice == '1':
-            version = input("Versión: ")
+            print("Versiones instaladas:")
+            for v in versiones_instaladas_lista:
+                print(f"- {v}")
+            version = input("Versión a instalar: ")
             instalar_minecraft(version)
 
         elif choice == '2':
-            version = input("Versión: ")
+            print("Versiones instaladas:")
+            for v in versiones_instaladas_lista:
+                print(f"- {v}")
+            version = input("Versión a instalar: ")
             instalar_forge(version)
 
         elif choice == '3':
@@ -204,6 +210,9 @@ def main():
 
         elif choice == '4':
             user = input("Usuario: ")
+            print("Versiónes instaladas:")
+            for v in versiones_instaladas_lista:
+                print(f"- {v}")
             version = input("Versión: ")
             ram = input("RAM (GB): ")
             ejecutar_minecraft(user, version, ram)
