@@ -33,12 +33,12 @@ Este repositorio contiene **dos versiones** del lanzador:
 
 bash
 git clone https://github.com/sin1nombre2/minecraft_launcher.git
-cd minecraft-launcher
+cd minecraft_launcher
 
 Instala las dependencias:
 
 python -m pip install -U minecraft-launcher-lib
-Para la versión con interfaz gráfica también instala:
+tambien instala:
 python -m pip install customtkinter
 
 📂 Archivos del proyecto
@@ -65,7 +65,7 @@ Instalación de Modpacks (.mrpack)
 En la versión consola: selecciona la opción 3
 En la versión gráfica: haz clic en "Instalar Modpack (.mrpack)"
 Pega la ruta completa del archivo .mrpack
-Elige si deseas instalar los archivos opcionales (se recomienda responder No a la mayoría, especialmente a: Essential, FancyMenu, Xaero's Minimap, Litematica, JEI, Jade, etc.)
+Elige si deseas instalar los archivos opcionales
 
 
 ⚠️ Problemas comunes y soluciones
@@ -79,7 +79,7 @@ El juego crashea → Revisa la carpeta crash-reports y elimina los mods incompat
 
 GitHub: @sin1nombre2
 
-Discord: [sin__nombre__](https://sin1nombre2-discord.com/users/886004158149296138)
+Discord: [sin__nombre__](https://discord.com/users/886004158149296138)
 
 
 📌 Próximas mejoras
