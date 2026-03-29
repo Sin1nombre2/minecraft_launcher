@@ -57,8 +57,11 @@ def ask_yes_no(title: str, text: str) -> bool:
 
 
 def instalar_modpack():
-    """Instala un archivo .mrpack de Modrinth"""
-    mrpack_path = ctk.CTkInputDialog(text="Pega la ruta completa del archivo .mrpack:", title="Instalar Modpack").get_input()
+    """Instala un archivo .mrpack de Modrinth en una carpeta separada con el nombre del modpack"""
+    mrpack_path = ctk.CTkInputDialog(
+        text="Pega la ruta completa del archivo .mrpack:",
+        title="Instalar Modpack"
+    ).get_input()
 
     if not mrpack_path or not os.path.isfile(mrpack_path):
         messagebox.showerror("Error", "No se encontró el archivo .mrpack o la ruta es inválida.")
@@ -70,22 +73,30 @@ def instalar_modpack():
         messagebox.showerror("Error", "El archivo no es un .mrpack válido.")
         return
 
+    # Obtener y limpiar el nombre del modpack para usarlo como nombre de carpeta
+    modpack_name = info.get('name', 'Modpack_Sin_Nombre').strip()
+    modpack_name = "".join(c if c.isalnum() or c in " _-()" else "_" for c in modpack_name)
+
     # Mostrar información del modpack
-    mensaje_info = f"Nombre: {info.get('name', 'Desconocido')}\n"
+    mensaje_info = f"Nombre: {modpack_name}\n"
     mensaje_info += f"Resumen: {info.get('summary', 'Sin descripción')}\n"
     mensaje_info += f"Versión de Minecraft: {info.get('minecraftVersion', 'Desconocida')}"
 
     if not ask_yes_no("¿Instalar este modpack?", mensaje_info):
         return
 
-    # Directorio del modpack
-    modpack_dir = ctk.CTkInputDialog(
-        text="Ruta donde instalar el modpack (dejar vacío para usar el directorio principal):",
-        title="Directorio del Modpack"
-    ).get_input()
+    # === Crear carpeta automática para la instancia ===
+    instances_dir = os.path.join(minecraft_directori, "instances")
+    os.makedirs(instances_dir, exist_ok=True)
 
-    if not modpack_dir:
-        modpack_dir = minecraft_directori
+    modpack_dir = os.path.join(instances_dir, modpack_name)
+
+    # Si ya existe, añadir sufijo (_1, _2, ...)
+    if os.path.exists(modpack_dir):
+        contador = 1
+        while os.path.exists(f"{modpack_dir}_{contador}"):
+            contador += 1
+        modpack_dir = f"{modpack_dir}_{contador}"
 
     # Archivos opcionales
     optional_files = []
@@ -95,9 +106,10 @@ def instalar_modpack():
 
     mrpack_options = {"optionalFiles": optional_files}
 
-    # Instalar
+    # Instalar el modpack
     try:
-        messagebox.showinfo("Instalando", "Iniciando instalación del modpack...\nEsto puede tardar varios minutos.")
+        messagebox.showinfo("Instalando", f"Instalando modpack en:\n{modpack_dir}\n\nEsto puede tardar varios minutos.")
+
         minecraft_launcher_lib.mrpack.install_mrpack(
             mrpack_path,
             minecraft_directori,
@@ -105,7 +117,12 @@ def instalar_modpack():
             mrpack_install_options=mrpack_options,
             callback={"setStatus": print}   # Muestra progreso en consola
         )
-        messagebox.showinfo("¡Éxito!", "El modpack se instaló correctamente.\nCierra y abre para poderlo abrir desde el menu de versiones.")
+
+        messagebox.showinfo(
+            "¡Éxito!", 
+            f"El modpack se instaló correctamente en:\n\n{modpack_dir}\n\n"
+            "Cierra y abre el launcher para actualizar la lista de versiones."
+        )
     except Exception as e:
         messagebox.showerror("Error", f"Ocurrió un error durante la instalación:\n{str(e)}")
 
@@ -191,7 +208,7 @@ bt_instalar_forge.configure(command=lambda: abrir_ventana_version("Instalar Forg
 bt_instalar_mrpack.configure(command=instalar_modpack)
 bt_ejecutar.configure(command=ejecutar_minecraft)
 
-# ====================== POSICIONAMIENTO  ======================
+# ====================== POSICIONAMIENTO ======================
 # Columna izquierda
 label_nombre.place(x=30, y=30)
 entry_nombre.place(x=30, y=60)

@@ -63,7 +63,7 @@ def instalar_forge(version: str):
 
 
 def instalar_modpack():
-    """Instala un modpack en formato .mrpack (Modrinth)"""
+    """Instala un modpack en formato .mrpack (Modrinth) en carpeta automática"""
     mrpack_path = input("\nIngresa la ruta completa del archivo .mrpack: ").strip()
 
     if not mrpack_path or not os.path.isfile(mrpack_path):
@@ -76,11 +76,15 @@ def instalar_modpack():
         print("❌ Error: El archivo no es un .mrpack válido.")
         return
 
+    # Limpiar nombre del modpack
+    modpack_name = info.get('name', 'Modpack_Sin_Nombre').strip()
+    modpack_name = "".join(c if c.isalnum() or c in " _-()" else "_" for c in modpack_name)
+
     # Mostrar información
     print("\n" + "="*50)
     print("INFORMACIÓN DEL MODPACK")
     print("="*50)
-    print(f"Nombre:     {info.get('name', 'Desconocido')}")
+    print(f"Nombre:     {modpack_name}")
     print(f"Resumen:    {info.get('summary', 'Sin descripción')}")
     print(f"Versión MC: {info.get('minecraftVersion', 'Desconocida')}")
     print("="*50)
@@ -88,10 +92,19 @@ def instalar_modpack():
     if not ask_yes_no("¿Deseas instalar este modpack?"):
         return
 
-    # Directorio donde instalar el modpack
-    modpack_dir = input("\nRuta donde instalar el modpack (Enter = usar directorio principal): ").strip()
-    if not modpack_dir:
-        modpack_dir = minecraft_directori
+    # === CREAR CARPETA instances ===
+    instances_dir = os.path.join(minecraft_directori, "instances")
+    os.makedirs(instances_dir, exist_ok=True)
+
+    # === CREAR CARPETA DEL MODPACK ===
+    modpack_dir = os.path.join(instances_dir, modpack_name)
+
+    # Evitar sobrescribir
+    if os.path.exists(modpack_dir):
+        contador = 1
+        while os.path.exists(f"{modpack_dir}_{contador}"):
+            contador += 1
+        modpack_dir = f"{modpack_dir}_{contador}"
 
     # Archivos opcionales
     optional_files = []
@@ -102,16 +115,18 @@ def instalar_modpack():
     mrpack_options = {"optionalFiles": optional_files}
 
     # Instalar
-    print("\nIniciando instalación del modpack... (puede tardar varios minutos)")
+    print(f"\n📁 Instalando en: {modpack_dir}")
+    print("⏳ Esto puede tardar varios minutos...\n")
+
     try:
         minecraft_launcher_lib.mrpack.install_mrpack(
             mrpack_path,
             minecraft_directori,
             modpack_directory=modpack_dir,
             mrpack_install_options=mrpack_options,
-            callback={"setStatus": print}   # Muestra progreso
+            callback={"setStatus": print}
         )
-        print("✅ ¡Modpack instalado correctamente!")
+        print(f"\n✅ ¡Modpack instalado correctamente en:\n{modpack_dir}")
     except Exception as e:
         print(f"❌ Error durante la instalación del modpack: {e}")
 
@@ -132,7 +147,6 @@ def ejecutar_minecraft(mine_user: str, version: str, ram: str):
 
         print(f"\nIniciando Minecraft con la versión: {version}")
         print(f"Usuario: {mine_user} | RAM: {ram}GB")
-        print("Cerrando launcher y abriendo el juego...")
 
         comando = minecraft_launcher_lib.command.get_minecraft_command(version, minecraft_directori, options)
         subprocess.run(comando)
