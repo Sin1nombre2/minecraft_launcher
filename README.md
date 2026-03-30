@@ -1,4 +1,4 @@
-🚀 Lanzador de Minecraft - Consola y Gráfico
+# **🚀 Lanzador de Minecraft - Consola y Gráfico**
 
 Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permite instalar versiones Vanilla, Forge, y modpacks (.mrpack), además de ejecutar el juego y gestionar instalaciones fácilmente.
 
@@ -30,56 +30,71 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 Python 3.8 o superior
 Java instalado y configurado en el PATH
 Conexión a internet
-⚙️ Instalación
-# Clonar repositorio
+
+# ⚙️ Instalación
+Clonar repositorio
 git clone https://github.com/tuusuario/minecraft-launcher-console.git
 
 # Entrar en la carpeta
-cd minecraft-launcher-console
+cd minecraft_launcher
 
 # Instalar dependencias
 pip install minecraft-launcher-lib customtkinter
-▶️ Uso
-🖥️ Versión con interfaz gráfica
+
+# ▶️ Uso
+🖥️ Versión con interfaz gráfica:
 python launcher_con_interfaz.py
-⌨️ Versión por consola
+
+⌨️ Versión por consola:
+
 python launcher_sin_interfaz.py
-📁 Estructura del proyecto
+
+# 📁 Estructura del proyecto
 minecraft-launcher-console/
-├── launcher_con_interfaz.py
+
+├── launcher_con_interfaz.py (recomendada✅)
+
 ├── launcher_sin_interfaz.py
+
 ├── README.md
-└── icono.ico  # (opcional, necesario para la GUI)
-⚠️ Notas importantes
+
+└── icono.ico  # (opcional)
+
+# ⚠️ Notas importantes:
+
 El launcher funciona en modo offline (no requiere cuenta premium)
 
 Ruta de instalación por defecto:
 
 C:/Users/TuUsuario/AppData/Roaming/.launchermc
+
 Se recomienda al menos 4GB de RAM
+
 La lista de versiones se actualiza automáticamente al instalar o eliminar
-🛠️ Mejoras futuras
+
+# 🛠️ Mejoras futuras:
+
 🔐 Soporte para cuentas Microsoft (login premium)
-📊 Barra de progreso con porcentaje real
-📂 Selección de carpeta personalizada
+
 🔄 Actualizador automático del launcher
+
 🎨 Mejoras visuales en la interfaz gráfica
-📸 Capturas (opcional pero recomendado)
 
-(Aquí puedes añadir imágenes o GIFs del launcher funcionando)
 
-🤝 Contribuciones
+# 🤝 Contribuciones
 
 Las contribuciones son bienvenidas 🙌
 Si encuentras un error o tienes ideas, puedes:
 
 Abrir un Issue
+
 Crear un Pull Request
-📄 Licencia
 
-Este proyecto es de código abierto. Puedes usarlo, modificarlo y mejorarlo libremente.
+# 📄 Licencia
 
-❤️ Autor
+**Este proyecto es de código abierto. Puedes usarlo, modificarlo y mejorarlo libremente.**
+
+# ❤️ Autor
 
 Hecho por Sin1Nombre2
 🔗 https://discord.com/users/886004158149296138
