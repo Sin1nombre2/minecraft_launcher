@@ -9,9 +9,12 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 
 ![Preview](assets/Captura_consola.png)
 
+
 ![Preview](assets/Captura_interfaz.png)
 
-**✨ Características:**
+
+
+# **✨ Características:**
 
 🧼 Interfaz limpia y fácil de usar (modo consola y gráfico)
 
