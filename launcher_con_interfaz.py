@@ -115,22 +115,16 @@ def instalar_modpack():
         messagebox.showerror("Error", "Ruta inválida o archivo no encontrado")
         return
 
-    # Obtener el nombre del modpack desde el nombre del archivo
-    nombre_modpack = os.path.splitext(os.path.basename(mrpack_path))[0]
-    ruta_instancia_especifica = os.path.join(instancias_dir, nombre_modpack)
-    
-    os.makedirs(ruta_instancia_especifica, exist_ok=True)
-
     def install(callback):
         # Usamos el parámetro correcto: modpack_directory
         mcl.mrpack.install_mrpack(
             mrpack_path,
             minecraft_directori,
-            modpack_directory=ruta_instancia_especifica,   # ← Aquí se guardan los modpacks
+            modpack_directory=instancias_dir,   # ← Aquí se guardan los modpacks
             callback=callback
         )
 
-    run_installation(install, f"Modpack '{nombre_modpack}' instalado correctamente en 'instancias'", "Error al instalar Modpack")
+    run_installation(install, "Modpack instalado correctamente en la carpeta 'instancias'", "Error al instalar Modpack")
 
 # ====================== INSTALAR VANILLA ======================
 def instalar_minecraft():
