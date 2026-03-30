@@ -33,7 +33,7 @@ Conexión a internet
 
 # ⚙️ Instalación
 Clonar repositorio
-git clone https://github.com/tuusuario/minecraft-launcher-console.git
+git clone https://github.com/sin1nombre2/minecraft_launcher.git
 
 Entrar en la carpeta
 cd minecraft_launcher
