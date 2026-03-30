@@ -32,10 +32,12 @@ Java instalado y configurado en el PATH
 Conexión a internet
 
 # ⚙️ Instalación
-Clonar repositorio
+Clonar repositorio con:
+
 git clone https://github.com/sin1nombre2/minecraft_launcher.git
 
-Entrar en la carpeta
+Entrar en la carpeta con:
+
 cd minecraft_launcher
 
 # Instalar dependencias
