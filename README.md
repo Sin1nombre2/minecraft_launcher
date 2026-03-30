@@ -5,7 +5,7 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.8%20a%201.21+-green)
 
-# **Galeria**
+## **Galeria**
 
 ![Spoiler](assets/Captura_consola.png)
 
@@ -14,7 +14,7 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 
 
 
-# **✨ Características:**
+## **✨ Características:**
 
 🧼 Interfaz limpia y fácil de usar (modo consola y gráfico)
 
@@ -35,12 +35,12 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 🔄 Actualización automática de versiones instaladas
 
 
-**📋 Requisitos**
+## **📋 Requisitos**
 Python 3.8 o superior
 Java instalado y configurado en el PATH
 Conexión a internet
 
-# ⚙️ Instalación
+## ⚙️ Instalación
 Clonar repositorio con:
 
 git clone https://github.com/sin1nombre2/minecraft_launcher.git
@@ -49,17 +49,17 @@ Entrar en la carpeta con:
 
 cd minecraft_launcher
 
-# Instalar dependencias
+## Instalar dependencias
 pip install minecraft-launcher-lib customtkinter
 
-# ▶️ Uso
+## ▶️ Uso
 🖥️ Versión con interfaz gráfica:
 python launcher_con_interfaz.py
 
 ⌨️ Versión por consola:
 python launcher_sin_interfaz.py
 
-# 📁 Estructura del proyecto
+## 📁 Estructura del proyecto
 minecraft-launcher-console/
 
 ├── launcher_con_interfaz.py (recomendada✅)
@@ -70,7 +70,7 @@ minecraft-launcher-console/
 
 └── icono.ico  # (opcional)
 
-# ⚠️ Notas importantes:
+## ⚠️ Notas importantes:
 
 El launcher funciona en modo offline (no requiere cuenta premium)
 
@@ -82,7 +82,7 @@ Se recomienda al menos 4GB de RAM
 
 La lista de versiones se actualiza automáticamente al instalar o eliminar
 
-# 🛠️ Mejoras futuras:
+## 🛠️ Mejoras futuras:
 
 🔐 Soporte para cuentas Microsoft (login premium)
 
@@ -91,7 +91,7 @@ La lista de versiones se actualiza automáticamente al instalar o eliminar
 🎨 Mejoras visuales en la interfaz gráfica
 
 
-# 🤝 Contribuciones
+## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas 🙌
 Si encuentras un error o tienes ideas, puedes:
