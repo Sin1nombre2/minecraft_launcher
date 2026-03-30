@@ -1,4 +1,10 @@
-import os, subprocess, shutil, uuid, threading
+import os
+import subprocess
+import shutil
+import uuid
+import threading
+import zipfile
+import json
 import minecraft_launcher_lib as mcl
 import tkinter as tk
 from tkinter import ttk
@@ -6,7 +12,10 @@ from tkinter import ttk
 # ====================== CONFIGURACIÓN ======================
 user_window = os.environ.get("USERNAME", "Usuario")
 minecraft_dir = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
+instancias_dir = os.path.join(minecraft_dir, "instancias")
+
 os.makedirs(minecraft_dir, exist_ok=True)
+os.makedirs(instancias_dir, exist_ok=True)
 
 # Cargar versiones
 versiones_lista = [v['id'] for v in mcl.utils.get_installed_versions(minecraft_dir)]
@@ -51,6 +60,22 @@ def ask_yes_no(pregunta: str) -> bool:
         print("Respuesta inválida. Usa S o N.")
 
 
+# ====================== OBTENER NOMBRE DEL MODPACK ======================
+def get_modpack_name(mrpack_path: str) -> str:
+    """Extrae el nombre del modpack desde el manifest del .mrpack"""
+    try:
+        with zipfile.ZipFile(mrpack_path) as z:
+            with z.open("modrinth.index.json") as f:
+                data = json.load(f)
+                name = data.get("name", "Modpack_Desconocido")
+                # Limpiar nombre para usarlo como carpeta
+                return "".join(c if c.isalnum() or c in " _-()" else "_" for c in name).strip()
+    except:
+        # Fallback si no se puede leer el manifest
+        base = os.path.basename(mrpack_path)
+        return os.path.splitext(base)[0]
+
+
 # ====================== INSTALACIONES ======================
 def instalar_minecraft(version: str):
     if not version:
@@ -90,36 +115,41 @@ def instalar_forge(version: str):
 
 def instalar_modpack():
     mrpack_path = input("\nRuta completa del archivo .mrpack: ").strip()
-    nombre_modpack = input("Nombre para la carpeta del modpack: ").strip()
 
     if not os.path.isfile(mrpack_path):
         print("❌ Archivo no encontrado o ruta inválida.")
         return
-    
-    if not nombre_modpack:
-        print("❌ El nombre del modpack no puede estar vacío.")
+
+    if not ask_yes_no("¿Instalar este modpack?"):
         return
 
-    if not ask_yes_no(f"¿Instalar el modpack '{nombre_modpack}'?"):
-        return
+    modpack_name = get_modpack_name(mrpack_path)
+    modpack_folder = os.path.join(instancias_dir, modpack_name)
+
+    # Verificar si ya existe
+    if os.path.exists(modpack_folder):
+        if not ask_yes_no(f"Ya existe la carpeta '{modpack_name}'. ¿Sobrescribir?"):
+            print("Instalación cancelada.")
+            return
 
     def tarea():
         try:
-            # Aquí instalamos el modpack en la carpeta "instancias/nombre_del_modpack"
-            instancia_especifica = os.path.join(minecraft_dir, "instancias", nombre_modpack)
-            os.makedirs(instancia_especifica, exist_ok=True)
+            os.makedirs(modpack_folder, exist_ok=True)
+
+            print(f"Instalando modpack en: {modpack_folder}")
 
             mcl.mrpack.install_mrpack(
                 mrpack_path,
                 minecraft_dir,
-                modpack_directory=instancia_especifica,
+                modpack_directory=modpack_folder,   # ← Se instala en su propia carpeta
                 callback={"setStatus": print}
             )
-            print(f"✅ Modpack instalado correctamente en 'instancias/{nombre_modpack}'.")
+            print(f"✅ Modpack '{modpack_name}' instalado correctamente.")
+            print(f"   Carpeta: {modpack_folder}")
         except Exception as e:
             print(f"❌ Error instalando modpack: {e}")
 
-    mostrar_barra_carga("Instalando Modpack", tarea)
+    mostrar_barra_carga(f"Instalando {modpack_name}", tarea)
 
 
 # ====================== ELIMINAR ======================
@@ -135,14 +165,13 @@ def eliminar_version():
 
     if ask_yes_no(f"¿Eliminar la versión {version}?"):
         try:
-            shutil.rmtree(ruta)
+            shutil.rmtree(ruta, ignore_errors=True)
             print(f"✅ Versión {version} eliminada.")
         except Exception as e:
             print(f"❌ Error al eliminar: {e}")
 
 
 def eliminar_modpack():
-    instancias_dir = os.path.join(minecraft_dir, "instancias")
     if not os.path.exists(instancias_dir):
         print("❌ No hay modpacks instalados.")
         return
@@ -158,7 +187,7 @@ def eliminar_modpack():
     ruta = os.path.join(instancias_dir, nombre)
     if os.path.exists(ruta) and ask_yes_no(f"¿Eliminar modpack '{nombre}'?"):
         try:
-            shutil.rmtree(ruta)
+            shutil.rmtree(ruta, ignore_errors=True)
             print(f"✅ Modpack '{nombre}' eliminado.")
         except Exception as e:
             print(f"❌ Error: {e}")
@@ -202,7 +231,7 @@ def ejecutar_minecraft():
 def main():
     while True:
         print("\n" + "="*60)
-        print("         LANZADOR DE MINECRAFT - Hecho por sin1nombre2   ")
+        print("          LANZADOR DE MINECRAFT - Hecho por sin1nombre2   ")
         print("="*60)
         print("1. Instalar Vanilla")
         print("2. Instalar Forge")

@@ -3,6 +3,8 @@ import subprocess
 import shutil
 import uuid
 import threading
+import zipfile
+import json
 import minecraft_launcher_lib as mcl
 import customtkinter as ctk
 from tkinter import messagebox
@@ -26,7 +28,7 @@ minecraft_directori = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
 instancias_dir = os.path.join(minecraft_directori, "instancias")
 
 os.makedirs(minecraft_directori, exist_ok=True)
-os.makedirs(instancias_dir, exist_ok=True)   # Carpeta para modpacks
+os.makedirs(instancias_dir, exist_ok=True)
 
 vers = ctk.StringVar(value="Cargando...")
 
@@ -104,7 +106,20 @@ def run_installation(install_func, success_msg, error_title="Error"):
 
     threading.Thread(target=thread_target, daemon=True).start()
 
-# ====================== INSTALAR MODPACK (CORREGIDO) ======================
+# ====================== OBTENER NOMBRE DEL MODPACK ======================
+def get_modpack_name(mrpack_path):
+    """Extrae el nombre del modpack desde el manifest.json del .mrpack"""
+    try:
+        with zipfile.ZipFile(mrpack_path) as z:
+            with z.open("modrinth.index.json") as f:
+                data = json.load(f)
+                return data.get("name", "Modpack_Desconocido").strip().replace(" ", "_")
+    except:
+        # Fallback si no se puede leer el manifest
+        base = os.path.basename(mrpack_path)
+        return os.path.splitext(base)[0]
+
+# ====================== INSTALAR MODPACK (MEJORADO) ======================
 def instalar_modpack():
     mrpack_path = ctk.CTkInputDialog(
         text="Ruta completa del archivo .mrpack:",
@@ -115,16 +130,32 @@ def instalar_modpack():
         messagebox.showerror("Error", "Ruta inválida o archivo no encontrado")
         return
 
+    modpack_name = get_modpack_name(mrpack_path)
+    modpack_folder = os.path.join(instancias_dir, modpack_name)
+
+    # Evitar sobrescribir si ya existe 
+    if os.path.exists(modpack_folder):
+        if not messagebox.askyesno("Carpeta existente", 
+            f"Ya existe una carpeta llamada '{modpack_name}'.\n¿Quieres sobrescribirla?"):
+            return
+
     def install(callback):
-        # Usamos el parámetro correcto: modpack_directory
+        # Creamos la carpeta del modpack
+        os.makedirs(modpack_folder, exist_ok=True)
+
+        # Instalamos el modpack directamente en su carpeta
         mcl.mrpack.install_mrpack(
             mrpack_path,
-            minecraft_directori,
-            modpack_directory=instancias_dir,   # ← Aquí se guardan los modpacks
+            minecraft_directori,           
+            modpack_directory=modpack_folder,  
             callback=callback
         )
 
-    run_installation(install, "Modpack instalado correctamente en la carpeta 'instancias'", "Error al instalar Modpack")
+    run_installation(
+        install, 
+        f"Modpack '{modpack_name}' instalado correctamente en:\n{modpack_folder}",
+        "Error al instalar Modpack"
+    )
 
 # ====================== INSTALAR VANILLA ======================
 def instalar_minecraft():
@@ -209,7 +240,7 @@ def ask_yes_no(title, text):
     return messagebox.askyesno(title, text)
 
 # ====================== VENTANA VERSIÓN ======================
-entry_version = None   # Para evitar errores de variable global
+entry_version = None
 
 def abrir_ventana_version(titulo, comando):
     global entry_version
