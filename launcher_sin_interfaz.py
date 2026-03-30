@@ -90,27 +90,32 @@ def instalar_forge(version: str):
 
 def instalar_modpack():
     mrpack_path = input("\nRuta completa del archivo .mrpack: ").strip()
+    nombre_modpack = input("Nombre para la carpeta del modpack: ").strip()
 
     if not os.path.isfile(mrpack_path):
         print("❌ Archivo no encontrado o ruta inválida.")
         return
+    
+    if not nombre_modpack:
+        print("❌ El nombre del modpack no puede estar vacío.")
+        return
 
-    if not ask_yes_no("¿Instalar este modpack?"):
+    if not ask_yes_no(f"¿Instalar el modpack '{nombre_modpack}'?"):
         return
 
     def tarea():
         try:
-            # Aquí instalamos el modpack en la carpeta "instancias"
-            instancias_dir = os.path.join(minecraft_dir, "instancias")
-            os.makedirs(instancias_dir, exist_ok=True)  # Aseguramos que exista
+            # Aquí instalamos el modpack en la carpeta "instancias/nombre_del_modpack"
+            instancia_especifica = os.path.join(minecraft_dir, "instancias", nombre_modpack)
+            os.makedirs(instancia_especifica, exist_ok=True)
 
             mcl.mrpack.install_mrpack(
                 mrpack_path,
                 minecraft_dir,
-                modpack_directory=instancias_dir,   # ← clave: usamos modpack_directory
+                modpack_directory=instancia_especifica,
                 callback={"setStatus": print}
             )
-            print("✅ Modpack instalado correctamente en la carpeta 'instancias'.")
+            print(f"✅ Modpack instalado correctamente en 'instancias/{nombre_modpack}'.")
         except Exception as e:
             print(f"❌ Error instalando modpack: {e}")
 
@@ -197,7 +202,7 @@ def ejecutar_minecraft():
 def main():
     while True:
         print("\n" + "="*60)
-        print("          LANZADOR DE MINECRAFT - Hecho por sin1nombre2   ")
+        print("         LANZADOR DE MINECRAFT - Hecho por sin1nombre2   ")
         print("="*60)
         print("1. Instalar Vanilla")
         print("2. Instalar Forge")
