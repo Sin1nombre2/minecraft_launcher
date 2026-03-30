@@ -41,16 +41,22 @@ Java instalado y configurado en el PATH
 Conexión a internet
 
 ## ⚙️ Instalación
-Clonar repositorio con:
+**Clonar repositorio**
 
-git clone https://github.com/sin1nombre2/minecraft_launcher.git
+```Bash
+git clone [https://github.com/sin1nombre2/minecraft_launcher.git](https://github.com/sin1nombre2/minecraft_launcher.git)
+```
 
-Entrar en la carpeta con:
+**Entrar a la carpeta**
 
+```
 cd minecraft_launcher
+```
 
 ## Instalar dependencias
+```Bash
 pip install minecraft-launcher-lib customtkinter
+```
 
 ## ▶️ Uso
 🖥️ Versión con interfaz gráfica:
