@@ -46,7 +46,6 @@ pip install minecraft-launcher-lib customtkinter
 python launcher_con_interfaz.py
 
 ⌨️ Versión por consola:
-
 python launcher_sin_interfaz.py
 
 # 📁 Estructura del proyecto
