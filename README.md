@@ -44,7 +44,7 @@ Conexión a internet
 **Clonar repositorio**
 
 ```Bash
-git clone [https://github.com/sin1nombre2/minecraft_launcher.git](https://github.com/sin1nombre2/minecraft_launcher.git)
+git clone https://github.com/sin1nombre2/minecraft_launcher.git
 ```
 
 **Entrar a la carpeta**
