@@ -1,4 +1,8 @@
-import os, subprocess, shutil, uuid, threading
+import os
+import subprocess
+import shutil
+import uuid
+import threading
 import minecraft_launcher_lib as mcl
 import customtkinter as ctk
 from tkinter import messagebox
@@ -19,7 +23,10 @@ except:
 
 user_window = os.environ.get("USERNAME", "Usuario")
 minecraft_directori = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
+instancias_dir = os.path.join(minecraft_directori, "instancias")
+
 os.makedirs(minecraft_directori, exist_ok=True)
+os.makedirs(instancias_dir, exist_ok=True)   # Carpeta para modpacks
 
 vers = ctk.StringVar(value="Cargando...")
 
@@ -42,10 +49,14 @@ def ventana_carga(titulo="Instalando..."):
 
 # ====================== REFRESH ======================
 def refresh_versions():
-    versiones = mcl.utils.get_installed_versions(minecraft_directori)
-    lista = [v['id'] for v in versiones] or ['No hay versiones instaladas']
-    vers.set(lista[0] if lista else 'No hay versiones instaladas')
-    versiones_menu.configure(values=lista)
+    try:
+        versiones = mcl.utils.get_installed_versions(minecraft_directori)
+        lista = [v['id'] for v in versiones] or ['No hay versiones instaladas']
+        vers.set(lista[0] if lista else 'No hay versiones instaladas')
+        versiones_menu.configure(values=lista)
+    except:
+        vers.set('Error al cargar versiones')
+        versiones_menu.configure(values=['Error al cargar'])
 
 # ====================== WIDGETS ======================
 label_nombre = ctk.CTkLabel(ventana, text='Nombre de jugador:')
@@ -66,31 +77,54 @@ bt_eliminar_modpack = ctk.CTkButton(ventana, text='Eliminar Modpack', fg_color="
 mantener_abierta = ctk.BooleanVar(value=True)
 check_mantener = ctk.CTkCheckBox(ventana, text="Mantener launcher abierto después de iniciar", variable=mantener_abierta)
 
-# ====================== FUNCIONES AUXILIARES ======================
-def ask_yes_no(title, text):
-    return messagebox.askyesno(title, text)
-
 # ====================== INSTALACIÓN EN HILO ======================
 def run_installation(install_func, success_msg, error_title="Error"):
-    """Ejecuta cualquier instalación en un hilo separado"""
     win, label_status, _ = ventana_carga("Instalando...")
 
     def set_status(text):
-        label_status.configure(text=text)
-        win.update_idletasks()
+        try:
+            label_status.configure(text=text)
+            win.update_idletasks()
+        except:
+            pass
 
     def thread_target():
-        callback = {"setStatus": set_status}
         try:
-            install_func(callback)
+            install_func({"setStatus": set_status})
             ventana.after(0, lambda: messagebox.showinfo("Éxito", success_msg))
             ventana.after(0, refresh_versions)
         except Exception as e:
-            ventana.after(0, lambda: messagebox.showerror(error_title, str(e)))
+            error_msg = str(e)
+            ventana.after(0, lambda: messagebox.showerror(error_title, error_msg))
         finally:
-            ventana.after(0, win.destroy)
+            try:
+                ventana.after(0, win.destroy)
+            except:
+                pass
 
     threading.Thread(target=thread_target, daemon=True).start()
+
+# ====================== INSTALAR MODPACK (CORREGIDO) ======================
+def instalar_modpack():
+    mrpack_path = ctk.CTkInputDialog(
+        text="Ruta completa del archivo .mrpack:",
+        title="Instalar Modpack"
+    ).get_input()
+
+    if not mrpack_path or not os.path.isfile(mrpack_path):
+        messagebox.showerror("Error", "Ruta inválida o archivo no encontrado")
+        return
+
+    def install(callback):
+        # Usamos el parámetro correcto: modpack_directory
+        mcl.mrpack.install_mrpack(
+            mrpack_path,
+            minecraft_directori,
+            modpack_directory=instancias_dir,   # ← Aquí se guardan los modpacks
+            callback=callback
+        )
+
+    run_installation(install, "Modpack instalado correctamente en la carpeta 'instancias'", "Error al instalar Modpack")
 
 # ====================== INSTALAR VANILLA ======================
 def instalar_minecraft():
@@ -119,50 +153,32 @@ def instalar_forge():
 
     run_installation(install, f"Forge para {version} instalado correctamente", "Error al instalar Forge")
 
-# ====================== INSTALAR MODPACK ======================
-def instalar_modpack():
-    mrpack_path = ctk.CTkInputDialog(
-        text="Ruta completa del archivo .mrpack:",
-        title="Instalar Modpack"
-    ).get_input()
-
-    if not mrpack_path or not os.path.isfile(mrpack_path):
-        messagebox.showerror("Error", "Ruta inválida")
-        return
-
-    def install(callback):
-        mcl.mrpack.install_mrpack(mrpack_path, minecraft_directori, callback=callback)
-
-    run_installation(install, "Modpack instalado correctamente", "Error al instalar Modpack")
-
 # ====================== ELIMINAR ======================
 def eliminar_version():
     version = vers.get()
-    if version in ['No hay versiones instaladas', 'Cargando...']:
+    if version in ['No hay versiones instaladas', 'Cargando...', 'Error al cargar']:
         messagebox.showerror("Error", "No hay versiones para eliminar")
         return
 
     ruta = os.path.join(minecraft_directori, "versions", version)
     if ask_yes_no("Confirmar", f"¿Eliminar {version}?"):
         try:
-            shutil.rmtree(ruta)
+            shutil.rmtree(ruta, ignore_errors=True)
             messagebox.showinfo("Éxito", f"Versión {version} eliminada")
             refresh_versions()
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
 def eliminar_modpack():
-    instances_dir = os.path.join(minecraft_directori, "instances")
-    if not os.path.exists(instances_dir):
+    if not os.path.exists(instancias_dir):
         messagebox.showerror("Error", "No hay modpacks instalados")
         return
 
-    modpacks = [d for d in os.listdir(instances_dir) if os.path.isdir(os.path.join(instances_dir, d))]
+    modpacks = [d for d in os.listdir(instancias_dir) if os.path.isdir(os.path.join(instancias_dir, d))]
     if not modpacks:
         messagebox.showerror("Error", "No hay modpacks instalados")
         return
 
-    # (Mantengo la ventana de selección simple)
     win_select = ctk.CTkToplevel(ventana)
     win_select.title("Eliminar Modpack")
     win_select.geometry("400x280")
@@ -170,21 +186,31 @@ def eliminar_modpack():
 
     ctk.CTkLabel(win_select, text="Selecciona el modpack:", font=("Arial", 13)).pack(pady=15)
 
-    var = ctk.StringVar()
+    var = ctk.StringVar(value=modpacks[0])
     combo = ctk.CTkOptionMenu(win_select, variable=var, values=modpacks, width=280)
     combo.pack(pady=10)
 
     def confirmar():
-        if not var.get(): return
-        if ask_yes_no("Confirmar", f"¿Eliminar '{var.get()}'?"):
-            shutil.rmtree(os.path.join(instances_dir, var.get()))
-            messagebox.showinfo("Éxito", "Modpack eliminado")
-            win_select.destroy()
+        selected = var.get()
+        if not selected:
+            return
+        if ask_yes_no("Confirmar", f"¿Eliminar '{selected}'?"):
+            try:
+                shutil.rmtree(os.path.join(instancias_dir, selected), ignore_errors=True)
+                messagebox.showinfo("Éxito", "Modpack eliminado correctamente")
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+        win_select.destroy()
 
-    ctk.CTkButton(win_select, text="Eliminar", fg_color="red", command=confirmar).pack(pady=20)
+    ctk.CTkButton(win_select, text="Eliminar", fg_color="red", command=confirmar).pack(pady=10)
     ctk.CTkButton(win_select, text="Cancelar", command=win_select.destroy).pack()
 
+def ask_yes_no(title, text):
+    return messagebox.askyesno(title, text)
+
 # ====================== VENTANA VERSIÓN ======================
+entry_version = None   # Para evitar errores de variable global
+
 def abrir_ventana_version(titulo, comando):
     global entry_version
     win = ctk.CTkToplevel(ventana)
@@ -208,7 +234,7 @@ def ejecutar_minecraft():
     if not nombre:
         messagebox.showerror("Error", "Introduce un nombre de jugador")
         return
-    if version in ['No hay versiones instaladas', 'Cargando...']:
+    if version in ['No hay versiones instaladas', 'Cargando...', 'Error al cargar']:
         messagebox.showerror("Error", "No hay ninguna versión instalada")
         return
 
@@ -229,12 +255,12 @@ def ejecutar_minecraft():
 
     try:
         comando = mcl.command.get_minecraft_command(version, minecraft_directori, options)
-        subprocess.run(comando)
+        subprocess.run(comando, check=True)
 
         if not mantener_abierta.get():
             ventana.destroy()
     except Exception as e:
-        messagebox.showerror("Error", f"Error al iniciar:\n{str(e)}")
+        messagebox.showerror("Error", f"Error al iniciar Minecraft:\n{str(e)}")
 
 # ====================== ASIGNAR COMANDOS ======================
 bt_instalar_version.configure(command=lambda: abrir_ventana_version("Instalar Vanilla", instalar_minecraft))

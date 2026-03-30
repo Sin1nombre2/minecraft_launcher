@@ -100,12 +100,17 @@ def instalar_modpack():
 
     def tarea():
         try:
+            # Aquí instalamos el modpack en la carpeta "instancias"
+            instancias_dir = os.path.join(minecraft_dir, "instancias")
+            os.makedirs(instancias_dir, exist_ok=True)  # Aseguramos que exista
+
             mcl.mrpack.install_mrpack(
                 mrpack_path,
                 minecraft_dir,
+                modpack_directory=instancias_dir,   # ← clave: usamos modpack_directory
                 callback={"setStatus": print}
             )
-            print("✅ Modpack instalado correctamente.")
+            print("✅ Modpack instalado correctamente en la carpeta 'instancias'.")
         except Exception as e:
             print(f"❌ Error instalando modpack: {e}")
 
@@ -132,12 +137,12 @@ def eliminar_version():
 
 
 def eliminar_modpack():
-    instances_dir = os.path.join(minecraft_dir, "instances")
-    if not os.path.exists(instances_dir):
+    instancias_dir = os.path.join(minecraft_dir, "instancias")
+    if not os.path.exists(instancias_dir):
         print("❌ No hay modpacks instalados.")
         return
 
-    modpacks = [d for d in os.listdir(instances_dir) if os.path.isdir(os.path.join(instances_dir, d))]
+    modpacks = [d for d in os.listdir(instancias_dir) if os.path.isdir(os.path.join(instancias_dir, d))]
     if not modpacks:
         print("❌ No hay modpacks instalados.")
         return
@@ -145,7 +150,7 @@ def eliminar_modpack():
     print(f"\nModpacks instalados: {', '.join(modpacks)}")
     nombre = input("Nombre del modpack a eliminar: ").strip()
 
-    ruta = os.path.join(instances_dir, nombre)
+    ruta = os.path.join(instancias_dir, nombre)
     if os.path.exists(ruta) and ask_yes_no(f"¿Eliminar modpack '{nombre}'?"):
         try:
             shutil.rmtree(ruta)
