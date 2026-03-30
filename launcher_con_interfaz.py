@@ -455,7 +455,7 @@ bt_instalar_forge.place(x=380, y=80)
 bt_instalar_mrpack.place(x=380, y=130)
 bt_eliminar_version.place(x=380, y=180)
 bt_eliminar_modpack.place(x=380, y=230)
-bt_iniciar_modpack.place(x=380, y=280)          # ← Nuevo botón aquí
+bt_iniciar_modpack.place(x=380, y=280)          
 check_mantener.place(x=30, y=480)
 bt_ejecutar.place(x=240, y=520)
 # ====================== INICIO ======================
