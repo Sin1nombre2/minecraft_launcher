@@ -141,7 +141,7 @@ def instalar_modpack():
             mcl.mrpack.install_mrpack(
                 mrpack_path,
                 minecraft_dir,
-                modpack_directory=modpack_folder,   # ← Se instala en su propia carpeta
+                modpack_directory=modpack_folder,   
                 callback={"setStatus": print}
             )
             print(f"✅ Modpack '{modpack_name}' instalado correctamente.")
