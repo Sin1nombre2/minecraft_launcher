@@ -35,7 +35,7 @@ Conexión a internet
 Clonar repositorio
 git clone https://github.com/tuusuario/minecraft-launcher-console.git
 
-# Entrar en la carpeta
+Entrar en la carpeta
 cd minecraft_launcher
 
 # Instalar dependencias
