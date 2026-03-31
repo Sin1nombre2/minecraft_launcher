@@ -103,6 +103,7 @@ versiones_menu = ctk.CTkOptionMenu(ventana, variable=vers, values=["Cargando..."
 bt_ejecutar = ctk.CTkButton(ventana, text='Iniciar Minecraft', fg_color="#3b82f6", width=220, height=35)
 bt_instalar_version = ctk.CTkButton(ventana, text='Instalar Versión Vanilla', fg_color="#10b981", width=220)
 bt_instalar_forge = ctk.CTkButton(ventana, text='Instalar Forge', fg_color="#ef4444", width=220)
+bt_instalar_fabric = ctk.CTkButton(ventana, text='Instalar Fabric', fg_color="#06b6d4", width=220)
 bt_instalar_mrpack = ctk.CTkButton(ventana, text='Instalar Modpack (.mrpack)', fg_color="#8b5cf6", width=220)
 bt_eliminar_version = ctk.CTkButton(ventana, text='Eliminar Versión', fg_color="#f59e0b", width=220)
 bt_eliminar_modpack = ctk.CTkButton(ventana, text='Eliminar Modpack', fg_color="#dc2626", width=220)
@@ -225,6 +226,16 @@ def instalar_forge(version):
         forge_version = forge_versions[0] if isinstance(forge_versions, list) else forge_versions
         mcl.forge.install_forge_version(forge_version, minecraft_directori)
     run_installation(install, f"Forge para {version} instalado correctamente", "Error al instalar Forge")
+# ====================== INSTALAR FABRIC ======================
+def instalar_fabric(version):
+    def install(set_status):
+        # instala vanilla primero (evita errores)
+        mcl.install.install_minecraft_version(version, minecraft_directori)
+
+        loader_version = mcl.fabric.get_latest_loader_version()
+        mcl.fabric.install_fabric(version, minecraft_directori, loader_version)
+
+    run_installation(install, f"Fabric para {version} instalado correctamente", "Error al instalar Fabric")
 # ====================== ELIMINAR ======================
 def eliminar_version():
     version = vers.get()
@@ -443,6 +454,7 @@ def ejecutar_minecraft():
 # ====================== ASIGNAR COMANDOS ======================
 bt_instalar_version.configure(command=lambda: abrir_ventana_version("Instalar Vanilla", instalar_minecraft))
 bt_instalar_forge.configure(command=lambda: abrir_ventana_version("Instalar Forge", instalar_forge))
+bt_instalar_fabric.configure(command=lambda: abrir_ventana_version("Instalar Fabric", instalar_fabric))
 bt_instalar_mrpack.configure(command=instalar_modpack)
 bt_ejecutar.configure(command=ejecutar_minecraft)
 bt_eliminar_version.configure(command=eliminar_version)
@@ -458,10 +470,11 @@ entry_ram.place(x=30, y=140)
 versiones_menu.place(x=30, y=210)
 bt_instalar_version.place(x=380, y=30)
 bt_instalar_forge.place(x=380, y=80)
-bt_instalar_mrpack.place(x=380, y=130)
-bt_eliminar_version.place(x=380, y=180)
-bt_eliminar_modpack.place(x=380, y=230)
-bt_iniciar_modpack.place(x=380, y=280)          # ← Nuevo botón aquí
+bt_instalar_fabric.place(x=380, y=130)
+bt_instalar_mrpack.place(x=380, y=190)
+bt_eliminar_version.place(x=380, y=230)
+bt_eliminar_modpack.place(x=380, y=280)
+bt_iniciar_modpack.place(x=380, y=320)          
 check_mantener.place(x=30, y=480)
 bt_ejecutar.place(x=240, y=520)
 # ====================== INICIO ======================
