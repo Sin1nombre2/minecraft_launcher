@@ -1,26 +1,32 @@
-import os
-import subprocess
-import shutil
-import uuid
-import threading
-import zipfile
-import json
+import os, subprocess, shutil, uuid, threading, zipfile, json, platform
 import minecraft_launcher_lib as mcl
 import tkinter as tk
 from tkinter import ttk
-
 # ====================== CONFIGURACIÓN ======================
-user_window = os.environ.get("USERNAME", "Usuario")
-minecraft_dir = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
-instancias_dir = os.path.join(minecraft_dir, "instancias")
 
-os.makedirs(minecraft_dir, exist_ok=True)
-os.makedirs(instancias_dir, exist_ok=True)
+def obtener_directorio_minecraft():
+    sistema = platform.system()
+    base = os.path.expanduser("~")
+
+    if sistema == "Windows":
+        return os.path.join(base, "AppData", "Roaming", ".launchermc")
+    elif sistema == "Linux":
+        return os.path.join(base, ".launchermc")
+    elif sistema == "Darwin":
+        return os.path.join(base, "Library", "Application Support", ".launchermc")
+    else:
+        raise Exception("Sistema no soportado")
+
+minecraft_directori = obtener_directorio_minecraft()
+instancias_directori = os.path.join(minecraft_directori, "instancias")
+
+os.makedirs(minecraft_directori, exist_ok=True)
+os.makedirs(instancias_directori, exist_ok=True)
 
 # Función para obtener versiones instaladas (se actualiza dinámicamente)
 def obtener_versiones_instaladas():
     """Devuelve lista de versiones instaladas en el directorio principal"""
-    versiones = [v['id'] for v in mcl.utils.get_installed_versions(minecraft_dir)]
+    versiones = [v['id'] for v in mcl.utils.get_installed_versions(minecraft_directori)]
     if not versiones:
         versiones = ["Sin versiones instaladas"]
     return versiones
@@ -88,7 +94,7 @@ def instalar_minecraft(version: str):
 
     def tarea():
         try:
-            mcl.install.install_minecraft_version(version, minecraft_dir)
+            mcl.install.install_minecraft_version(version, minecraft_directori)
             print(f"✅ Versión {version} instalada correctamente.")
         except Exception as e:
             print(f"❌ Error instalando versión: {e}")
@@ -108,7 +114,7 @@ def instalar_forge(version: str):
             if not forge_ver:
                 print(f"❌ No se encontró Forge para la versión {version}")
                 return
-            mcl.forge.install_forge_version(forge_ver, minecraft_dir)
+            mcl.forge.install_forge_version(forge_ver, minecraft_directori)
             print(f"✅ Forge para {version} instalado correctamente.")
         except Exception as e:
             print(f"❌ Error instalando Forge: {e}")
@@ -128,7 +134,7 @@ def instalar_modpack():
         return
 
     modpack_name = get_modpack_name(mrpack_path)
-    modpack_folder = os.path.join(instancias_dir, modpack_name)
+    modpack_folder = os.path.join(instancias_directori, modpack_name)
 
     # Verificar si ya existe
     if os.path.exists(modpack_folder):
@@ -144,7 +150,7 @@ def instalar_modpack():
             # Instalar el modpack
             mcl.mrpack.install_mrpack(
                 mrpack_path,
-                minecraft_dir,
+                minecraft_directori,
                 modpack_directory=modpack_folder,
                 callback={"setStatus": print}
             )
@@ -183,7 +189,7 @@ def eliminar_version():
         print("❌ Esa versión no está instalada.")
         return
 
-    ruta = os.path.join(minecraft_dir, "versions", version)
+    ruta = os.path.join(minecraft_directori, "versions", version)
 
     if ask_yes_no(f"¿Eliminar la versión {version}?"):
         try:
@@ -194,11 +200,11 @@ def eliminar_version():
 
 def eliminar_modpack():
     """Elimina un modpack instalado"""
-    if not os.path.exists(instancias_dir):
+    if not os.path.exists(instancias_directori):
         print("❌ No hay modpacks instalados.")
         return
 
-    modpacks = [d for d in os.listdir(instancias_dir) if os.path.isdir(os.path.join(instancias_dir, d))]
+    modpacks = [d for d in os.listdir(instancias_directori) if os.path.isdir(os.path.join(instancias_directori, d))]
     if not modpacks:
         print("❌ No hay modpacks instalados.")
         return
@@ -206,7 +212,7 @@ def eliminar_modpack():
     print(f"\nModpacks instalados: {', '.join(modpacks)}")
     nombre = input("Nombre del modpack a eliminar: ").strip()
 
-    ruta = os.path.join(instancias_dir, nombre)
+    ruta = os.path.join(instancias_directori, nombre)
     if os.path.exists(ruta) and ask_yes_no(f"¿Eliminar modpack '{nombre}'?"):
         try:
             shutil.rmtree(ruta, ignore_errors=True)
@@ -239,10 +245,9 @@ def ejecutar_minecraft():
     tipo = input("Opción (1/2): ").strip()
 
     version = ""
-    directorio_juego = minecraft_dir  # Por defecto
+    directorio_juego = minecraft_directori  # Por defecto
 
     if tipo == "1":
-        # Ejecutar versión normal
         versiones_lista = obtener_versiones_instaladas()
         print(f"\nVersiones disponibles: {', '.join(versiones_lista)}")
         version = input("Versión a ejecutar: ").strip()
@@ -251,8 +256,7 @@ def ejecutar_minecraft():
             return
 
     elif tipo == "2":
-        # Ejecutar modpack
-        modpacks = [d for d in os.listdir(instancias_dir) if os.path.isdir(os.path.join(instancias_dir, d))]
+        modpacks = [d for d in os.listdir(instancias_directori) if os.path.isdir(os.path.join(instancias_directori, d))]
         if not modpacks:
             print("❌ No hay modpacks instalados en la carpeta de instancias.")
             return
@@ -260,12 +264,11 @@ def ejecutar_minecraft():
         print(f"\nModpacks disponibles: {', '.join(modpacks)}")
         nombre_modpack = input("Nombre del modpack: ").strip()
 
-        ruta_modpack = os.path.join(instancias_dir, nombre_modpack)
+        ruta_modpack = os.path.join(instancias_directori, nombre_modpack)
         if not os.path.exists(ruta_modpack):
             print("❌ Modpack no encontrado.")
             return
 
-        # LEER INFORMACIÓN DEL MODPACK
         info_path = os.path.join(ruta_modpack, "modpack_info.json")
         if not os.path.exists(info_path):
             print("❌ El modpack no tiene información de versión.")
@@ -280,7 +283,6 @@ def ejecutar_minecraft():
             print(f"❌ Error leyendo información: {e}")
             return
 
-        # Verificar que la versión exista en el directorio principal
         versiones_lista = obtener_versiones_instaladas()
         if version not in versiones_lista:
             print(f"❌ La versión {version} no está instalada.")
@@ -293,7 +295,6 @@ def ejecutar_minecraft():
         print("❌ Opción inválida.")
         return
 
-    # Configurar opciones de lanzamiento
     options = {
         'username': usuario,
         'uuid': str(uuid.uuid4()),
@@ -301,14 +302,13 @@ def ejecutar_minecraft():
         'jvmArguments': [f"-Xmx{ram_mb}M", f"-Xms{ram_mb}M"]
     }
 
-    # IMPORTANTE: Para modpacks, usar gameDirectory
     if tipo == "2":
         options["gameDirectory"] = directorio_juego
 
     try:
         comando = mcl.command.get_minecraft_command(
             version, 
-            minecraft_dir,  # Directorio donde están las versiones
+            minecraft_directori,
             options
         )
         print(f"\n🚀 Iniciando Minecraft {version} con {ram}GB de RAM...")
@@ -324,19 +324,18 @@ def mostrar_info():
     print("\n" + "="*60)
     print("          INFORMACIÓN DEL SISTEMA")
     print("="*60)
-    print(f"Directorio de Minecraft: {minecraft_dir}")
-    print(f"Directorio de instancias: {instancias_dir}")
+    print(f"Directorio de Minecraft: {minecraft_directori}")
+    print(f"Directorio de instancias: {instancias_directori}")
     
     versiones = obtener_versiones_instaladas()
     print(f"Versiones instaladas: {len([v for v in versiones if v != 'Sin versiones instaladas'])}")
     
-    if os.path.exists(instancias_dir):
-        modpacks = [d for d in os.listdir(instancias_dir) if os.path.isdir(os.path.join(instancias_dir, d))]
+    if os.path.exists(instancias_directori):
+        modpacks = [d for d in os.listdir(instancias_directori) if os.path.isdir(os.path.join(instancias_directori, d))]
         print(f"Modpacks instalados: {len(modpacks)}")
         
-        # Mostrar modpacks con sus versiones
         for modpack in modpacks:
-            info_path = os.path.join(instancias_dir, modpack, "modpack_info.json")
+            info_path = os.path.join(instancias_directori, modpack, "modpack_info.json")
             if os.path.exists(info_path):
                 try:
                     with open(info_path, "r") as f:

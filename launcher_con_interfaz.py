@@ -1,10 +1,4 @@
-import os
-import subprocess
-import shutil
-import uuid
-import threading
-import zipfile
-import json
+import os, platform, subprocess, shutil, uuid, zipfile, json, threading
 import minecraft_launcher_lib as mcl
 import customtkinter as ctk
 from tkinter import messagebox, filedialog
@@ -19,8 +13,20 @@ try:
     ventana.iconbitmap("icono.ico")
 except:
     pass
-user_window = os.environ.get("USERNAME", "Usuario")
-minecraft_directori = f"C:/Users/{user_window}/AppData/Roaming/.launchermc"
+def obtener_directorio_minecraft():
+    sistema = platform.system()
+    base = os.path.expanduser("~")
+
+    if sistema == "Windows":
+        return os.path.join(base, "AppData", "Roaming", ".launchermc")
+    elif sistema == "Linux":
+        return os.path.join(base, ".launchermc")
+    elif sistema == "Darwin":
+        return os.path.join(base, "Library", "Application Support", ".launchermc")
+    else:
+        raise Exception("Sistema no soportado")
+
+minecraft_directori = obtener_directorio_minecraft()
 instancias_dir = os.path.join(minecraft_directori, "instancias")
 os.makedirs(minecraft_directori, exist_ok=True)
 os.makedirs(instancias_dir, exist_ok=True)
@@ -455,7 +461,7 @@ bt_instalar_forge.place(x=380, y=80)
 bt_instalar_mrpack.place(x=380, y=130)
 bt_eliminar_version.place(x=380, y=180)
 bt_eliminar_modpack.place(x=380, y=230)
-bt_iniciar_modpack.place(x=380, y=280)          
+bt_iniciar_modpack.place(x=380, y=280)          # ← Nuevo botón aquí
 check_mantener.place(x=30, y=480)
 bt_ejecutar.place(x=240, y=520)
 # ====================== INICIO ======================
