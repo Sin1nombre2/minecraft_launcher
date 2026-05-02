@@ -435,6 +435,8 @@ if __name__ == "__main__":
     ║          ✅ Aislamiento de instancias                    ║
     ║          ✅ Gestión completa de versiones                ║
     ║          ✅ Soporte para NeoForge                        ║
+    ║          ✅ Soporte para Fabric                          ║ 
+    ║          ✅ Soporte para Forge                           ║     
     ╚══════════════════════════════════════════════════════════╝
     """)
     main()
