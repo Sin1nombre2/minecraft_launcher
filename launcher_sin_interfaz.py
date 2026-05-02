@@ -2,6 +2,7 @@ import os, subprocess, shutil, uuid, threading, zipfile, json, platform
 import minecraft_launcher_lib as mcl
 import tkinter as tk
 from tkinter import ttk
+
 # ====================== CONFIGURACIÓN ======================
 
 def obtener_directorio_minecraft():
@@ -23,7 +24,7 @@ instancias_directori = os.path.join(minecraft_directori, "instancias")
 os.makedirs(minecraft_directori, exist_ok=True)
 os.makedirs(instancias_directori, exist_ok=True)
 
-# Función para obtener versiones instaladas (se actualiza dinámicamente)
+# Función para obtener versiones instaladas
 def obtener_versiones_instaladas():
     """Devuelve lista de versiones instaladas en el directorio principal"""
     versiones = [v['id'] for v in mcl.utils.get_installed_versions(minecraft_directori)]
@@ -33,18 +34,21 @@ def obtener_versiones_instaladas():
 
 # ====================== BARRA DE CARGA ======================
 def mostrar_barra_carga(titulo: str, func, *args):
-    """Muestra ventana con barra de progreso mientras se ejecuta una función"""
+    """Muestra ventana con barra de progreso de forma más estable"""
     root = tk.Tk()
     root.title(titulo)
-    root.geometry("340x120")
+    root.geometry("360x140")
     root.resizable(False, False)
     root.attributes("-topmost", True)  
 
-    tk.Label(root, text="Procesando, por favor espera...", font=("Arial", 10)).pack(pady=12)
+    tk.Label(root, text="Procesando, por favor espera...", font=("Arial", 10)).pack(pady=15)
 
-    progress = ttk.Progressbar(root, orient="horizontal", length=300, mode="indeterminate")
+    progress = ttk.Progressbar(root, orient="horizontal", length=320, mode="indeterminate")
     progress.pack(pady=10)
-    progress.start(15)
+    progress.start(20)
+
+    status_label = tk.Label(root, text="Iniciando...", font=("Arial", 9), fg="gray")
+    status_label.pack(pady=5)
 
     def tarea():
         try:
@@ -53,13 +57,17 @@ def mostrar_barra_carga(titulo: str, func, *args):
             print(f"❌ Error: {e}")
         finally:
             try:
-                root.destroy()
+                # Detener animación y destruir de forma segura
+                if root.winfo_exists():
+                    progress.stop()
+                    root.destroy()
             except:
                 pass
 
-    threading.Thread(target=tarea, daemon=True).start()
-    root.mainloop()
+    thread = threading.Thread(target=tarea, daemon=True)
+    thread.start()
 
+    root.mainloop()
 # ====================== FUNCIONES AUXILIARES ======================
 def ask_yes_no(pregunta: str) -> bool:
     """Pregunta sí/no al usuario y devuelve True/False"""
@@ -78,16 +86,13 @@ def get_modpack_name(mrpack_path: str) -> str:
             with z.open("modrinth.index.json") as f:
                 data = json.load(f)
                 name = data.get("name", "Modpack_Desconocido")
-                # Limpiar nombre para usarlo como carpeta
                 return "".join(c if c.isalnum() or c in " _-()" else "_" for c in name).strip()
     except:
-        # Fallback si no se puede leer el manifest
         base = os.path.basename(mrpack_path)
         return os.path.splitext(base)[0]
 
 # ====================== INSTALACIONES ======================
 def instalar_minecraft(version: str):
-    """Instala una versión vanilla de Minecraft"""
     if not version:
         print("❌ Debes ingresar una versión.")
         return
@@ -103,7 +108,6 @@ def instalar_minecraft(version: str):
     mostrar_barra_carga(f"Instalando {version}", tarea)
 
 def instalar_forge(version: str):
-    """Instala Forge para una versión específica"""
     if not version:
         print("❌ Debes ingresar una versión.")
         return
@@ -122,8 +126,49 @@ def instalar_forge(version: str):
     print(f"Instalando Forge para {version}...")
     mostrar_barra_carga(f"Instalando Forge - {version}", tarea)
 
+def instalar_neoforge(version: str):
+    """Instala NeoForge"""
+    if not version:
+        print("❌ Debes ingresar una versión.")
+        return
+
+    def tarea():
+        try:
+            neoforge = mcl.mod_loader.get_mod_loader("neoforge")
+            
+            if not neoforge.is_minecraft_version_supported(version):
+                print(f"❌ NeoForge no soporta la versión {version}")
+                return
+
+            print(f"Instalando NeoForge para Minecraft {version}...")
+            installed_version = neoforge.install(
+                version, 
+                minecraft_directori,
+                callback={"setStatus": print}
+            )
+            print(f"✅ NeoForge instalado correctamente como: {installed_version}")
+        except Exception as e:
+            print(f"❌ Error instalando NeoForge: {e}")
+
+    mostrar_barra_carga(f"Instalando NeoForge - {version}", tarea)
+
+def instalar_fabric(version: str):
+    if not version:
+        print("❌ Debes ingresar una versión.")
+        return
+
+    def tarea():
+        try:
+            loader_version = mcl.fabric.get_latest_loader_version()
+            mcl.fabric.install_fabric(version, minecraft_directori, loader_version)
+            print(f"✅ Fabric para {version} instalado correctamente.")
+        except Exception as e:
+            print(f"❌ Error instalando Fabric: {e}")
+
+    print(f"Instalando Fabric para {version}...")
+    mostrar_barra_carga(f"Instalando Fabric - {version}", tarea)
+
 def instalar_modpack():
-    """Instala un modpack desde archivo .mrpack"""
     mrpack_path = input("\nRuta completa del archivo .mrpack: ").strip()
 
     if not os.path.isfile(mrpack_path):
@@ -136,7 +181,6 @@ def instalar_modpack():
     modpack_name = get_modpack_name(mrpack_path)
     modpack_folder = os.path.join(instancias_directori, modpack_name)
 
-    # Verificar si ya existe
     if os.path.exists(modpack_folder):
         if not ask_yes_no(f"Ya existe la carpeta '{modpack_name}'. ¿Sobrescribir?"):
             print("Instalación cancelada.")
@@ -147,7 +191,6 @@ def instalar_modpack():
             os.makedirs(modpack_folder, exist_ok=True)
             print(f"Instalando modpack en: {modpack_folder}")
 
-            # Instalar el modpack
             mcl.mrpack.install_mrpack(
                 mrpack_path,
                 minecraft_directori,
@@ -155,10 +198,8 @@ def instalar_modpack():
                 callback={"setStatus": print}
             )
             
-            # OBTENER Y GUARDAR LA VERSIÓN DE LANZAMIENTO
             launch_version = mcl.mrpack.get_mrpack_launch_version(mrpack_path)
             
-            # Guardar metadatos del modpack
             modpack_info = {
                 "launch_version": launch_version,
                 "mrpack_path": mrpack_path,
@@ -180,7 +221,6 @@ def instalar_modpack():
 
 # ====================== ELIMINAR ======================
 def eliminar_version():
-    """Elimina una versión instalada de Minecraft"""
     versiones_lista = obtener_versiones_instaladas()
     print(f"\nVersiones instaladas: {', '.join(versiones_lista)}")
     version = input("Versión a eliminar: ").strip()
@@ -199,7 +239,6 @@ def eliminar_version():
             print(f"❌ Error al eliminar: {e}")
 
 def eliminar_modpack():
-    """Elimina un modpack instalado"""
     if not os.path.exists(instancias_directori):
         print("❌ No hay modpacks instalados.")
         return
@@ -222,7 +261,6 @@ def eliminar_modpack():
 
 # ====================== EJECUTAR ======================
 def ejecutar_minecraft():
-    """Ejecuta Minecraft (versión normal o modpack)"""
     usuario = input("Nombre de usuario: ").strip()
     if not usuario:
         print("❌ Debes ingresar un nombre de usuario.")
@@ -237,15 +275,15 @@ def ejecutar_minecraft():
         print("❌ RAM inválida. Usa un número entre 1 y 32.")
         return
 
-    ram_mb = str(ram_int * 1024)  # Convertir GB a MB
+    ram_mb = str(ram_int * 1024)
 
     print("\n¿Qué deseas ejecutar?")
-    print("1. Versión Vanilla / Forge")
+    print("1. Versión Vanilla / Forge / Fabric / NeoForge")
     print("2. Modpack instalado")
     tipo = input("Opción (1/2): ").strip()
 
     version = ""
-    directorio_juego = minecraft_directori  # Por defecto
+    directorio_juego = minecraft_directori
 
     if tipo == "1":
         versiones_lista = obtener_versiones_instaladas()
@@ -272,7 +310,6 @@ def ejecutar_minecraft():
         info_path = os.path.join(ruta_modpack, "modpack_info.json")
         if not os.path.exists(info_path):
             print("❌ El modpack no tiene información de versión.")
-            print("   Debe reinstalarlo con el código actualizado.")
             return
 
         try:
@@ -281,12 +318,6 @@ def ejecutar_minecraft():
             version = modpack_info["launch_version"]
         except Exception as e:
             print(f"❌ Error leyendo información: {e}")
-            return
-
-        versiones_lista = obtener_versiones_instaladas()
-        if version not in versiones_lista:
-            print(f"❌ La versión {version} no está instalada.")
-            print("   reinstale el modpack.")
             return
 
         directorio_juego = ruta_modpack
@@ -306,21 +337,14 @@ def ejecutar_minecraft():
         options["gameDirectory"] = directorio_juego
 
     try:
-        comando = mcl.command.get_minecraft_command(
-            version, 
-            minecraft_directori,
-            options
-        )
+        comando = mcl.command.get_minecraft_command(version, minecraft_directori, options)
         print(f"\n🚀 Iniciando Minecraft {version} con {ram}GB de RAM...")
-        if tipo == "2":
-            print(f"   (Carpeta de juego: {directorio_juego})")
         subprocess.run(comando)
     except Exception as e:
         print(f"❌ Error al ejecutar: {e}")
 
-# ====================== INFORMACIÓN DEL SISTEMA ======================
+# ====================== INFORMACIÓN ======================
 def mostrar_info():
-    """Muestra información del sistema y versiones instaladas"""
     print("\n" + "="*60)
     print("          INFORMACIÓN DEL SISTEMA")
     print("="*60)
@@ -349,21 +373,22 @@ def mostrar_info():
     
     print("="*60)
 
-# ====================== MENÚ PRINCIPAL ======================
+# ====================== MENÚ ======================
 def main():
-    """Menú principal del launcher"""
     while True:
         print("\n" + "="*60)
         print("       LANZADOR DE MINECRAFT - Hecho por sin1nombre2")
         print("="*60)
         print("1. Instalar Vanilla")
         print("2. Instalar Forge")
-        print("3. Instalar Modpack (.mrpack)")
-        print("4. Ejecutar Minecraft")
-        print("5. Eliminar Versión")
-        print("6. Eliminar Modpack")
-        print("7. Mostrar Información")
-        print("8. Salir")
+        print("3. Instalar Fabric")
+        print("4. Instalar NeoForge")         
+        print("5. Instalar Modpack (.mrpack)")
+        print("6. Ejecutar Minecraft")
+        print("7. Eliminar Versión")
+        print("8. Eliminar Modpack")
+        print("9. Mostrar Información")
+        print("10. Salir")
 
         opcion = input("\nSelecciona una opción: ").strip()
 
@@ -374,22 +399,28 @@ def main():
             version = input("Versión base para Forge: ").strip()
             instalar_forge(version)
         elif opcion == "3":
-            instalar_modpack()
-        elif opcion == "4":
-            ejecutar_minecraft()
+            version = input("Versión base para Fabric: ").strip()
+            instalar_fabric(version)
+        elif opcion == "4":                                 # ← Nueva opción
+            version = input("Versión base para NeoForge: ").strip()
+            instalar_neoforge(version)
         elif opcion == "5":
-            eliminar_version()
+            instalar_modpack()
         elif opcion == "6":
-            eliminar_modpack()
+            ejecutar_minecraft()
         elif opcion == "7":
-            mostrar_info()
+            eliminar_version()
         elif opcion == "8":
+            eliminar_modpack()
+        elif opcion == "9":
+            mostrar_info()
+        elif opcion == "10":
             print("👋 Saliendo del lanzador...")
             break
         else:
             print("❌ Opción inválida.")
 
-        if opcion != "8":
+        if opcion != "10":
             input("\nPresiona Enter para continuar...")
 
 if __name__ == "__main__":
@@ -402,9 +433,8 @@ if __name__ == "__main__":
     ║                                                          ║
     ║          ✅ Soporte para Modpacks .mrpack                ║
     ║          ✅ Aislamiento de instancias                    ║
-    ║          ✅ Barra de progreso visual                     ║
     ║          ✅ Gestión completa de versiones                ║
-    ║                                                          ║
+    ║          ✅ Soporte para NeoForge                        ║
     ╚══════════════════════════════════════════════════════════╝
     """)
     main()
