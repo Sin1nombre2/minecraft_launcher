@@ -10,7 +10,7 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 ![Spoiler](assets/Captura_consola.png)
 
 
-![Spoiler](assets/Captura_interfaz.png)
+![Spoiler](assets/captura_interfaz.png)
 
 
 
