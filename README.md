@@ -22,7 +22,11 @@ Un lanzador ligero y funcional para Minecraft desarrollado en Python, que permit
 
 📦 Instalación de versiones Vanilla
 
-🔧 Instalación automática de Forge
+🛰️ Instalación automática de Forge
+
+📄 Instalación automática de Fabric
+
+🦊 Instalación automática de NeoForge
 
 🧩 Soporte para modpacks (.mrpack)
 
