@@ -134,5 +134,4 @@ Crear un Pull Request.
 📄 Licencia
 Este proyecto es de código abierto. Puedes usarlo, modificarlo y mejorarlo libremente.
 
-❤️ Autor
-Hecho con ❤️ por Sin1Nombre2
+
